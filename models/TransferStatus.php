@@ -2,7 +2,7 @@
 
 namespace app\models;
 
-use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "transfer_status".
@@ -12,7 +12,7 @@ use Yii;
  *
  * @property Transfer[] $transfers
  */
-class TransferStatus extends \yii\db\ActiveRecord
+class TransferStatus extends ActiveRecord
 {
     /**
      * {@inheritdoc}

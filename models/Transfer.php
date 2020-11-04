@@ -2,7 +2,8 @@
 
 namespace app\models;
 
-use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "transfer".
@@ -24,8 +25,15 @@ use Yii;
  * @property Wallet $recipientWallet
  * @property TransferStatus $status
  */
-class Transfer extends \yii\db\ActiveRecord
+class Transfer extends ActiveRecord
 {
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::class,
+        ];
+    }
+
     /**
      * {@inheritdoc}
      */
