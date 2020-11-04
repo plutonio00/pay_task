@@ -8,7 +8,8 @@ use Yii;
  * This is the model class for table "user".
  *
  * @property int $id
- * @property string $first* @property string $last_name
+ * @property string $first_name
+ * @property string $last_name
  * @property int $is_male
  * @property string $login
  * @property string $email
@@ -16,8 +17,8 @@ use Yii;
  * @property string $created_at
  * @property string $updated_at
  *
- * @property Transfer[] $transfers
- * @property Transfer[] $transfers0
+ * @property Transfer[] $transferRecipients
+ * @property Transfer[] $transferSenders
  * @property Wallet[] $wallets
  */
 class User extends \yii\db\ActiveRecord
@@ -71,9 +72,9 @@ class User extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getTransfers()
+    public function getTransferRecipients()
     {
-        return $this->hasMany(Transfer::class, ['id_sender' => 'id']);
+        return $this->hasMany(Transfer::class, ['id_recipient' => 'id']);
     }
 
     /**
@@ -81,9 +82,9 @@ class User extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getTransfers0()
+    public function getTransferSenders()
     {
-        return $this->hasMany(Transfer::class, ['id_recipient' => 'id']);
+        return $this->hasMany(Transfer::class, ['id_sender' => 'id']);
     }
 
     /**

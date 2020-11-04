@@ -78,7 +78,7 @@ class Transfer extends \yii\db\ActiveRecord
      */
     public function getSender()
     {
-        return $this->hasOne(User::className(), ['id' => 'id_sender']);
+        return $this->hasOne(User::class, ['id' => 'id_sender']);
     }
 
     /**
@@ -88,7 +88,7 @@ class Transfer extends \yii\db\ActiveRecord
      */
     public function getRecipient()
     {
-        return $this->hasOne(User::className(), ['id' => 'id_recipient']);
+        return $this->hasOne(User::class, ['id' => 'id_recipient']);
     }
 
     /**
@@ -98,7 +98,7 @@ class Transfer extends \yii\db\ActiveRecord
      */
     public function getSenderWallet()
     {
-        return $this->hasOne(Wallet::className(), ['id' => 'id_sender_wallet']);
+        return $this->hasOne(Wallet::class, ['id' => 'id_sender_wallet']);
     }
 
     /**
@@ -108,7 +108,7 @@ class Transfer extends \yii\db\ActiveRecord
      */
     public function getRecipientWallet()
     {
-        return $this->hasOne(Wallet::className(), ['id' => 'id_recipient_wallet']);
+        return $this->hasOne(Wallet::class, ['id' => 'id_recipient_wallet']);
     }
 
     /**
@@ -118,6 +118,6 @@ class Transfer extends \yii\db\ActiveRecord
      */
     public function getStatus()
     {
-        return $this->hasOne(TransferStatus::className(), ['id' => 'id_status']);
+        return $this->hasOne(TransferStatus::class, ['id' => 'id_status']);
     }
 }

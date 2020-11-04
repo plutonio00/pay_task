@@ -14,8 +14,8 @@ use Yii;
  * @property string $created_at
  * @property string $updated_at
  *
- * @property Transfer[] $transfers
- * @property Transfer[] $transfers0
+ * @property Transfer[] $transferSenderWallets
+ * @property Transfer[] $transferRecipientWallets
  * @property User $user
  */
 class Wallet extends \yii\db\ActiveRecord
@@ -59,21 +59,21 @@ class Wallet extends \yii\db\ActiveRecord
     }
 
     /**
-     * Gets query for [[Transfers]].
+     * Gets query for [[TransferSenderWallets]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getTransfers()
+    public function getTransferSenderWallets()
     {
         return $this->hasMany(Transfer::class, ['id_sender_wallet' => 'id']);
     }
 
     /**
-     * Gets query for [[Transfers0]].
+     * Gets query for [[TransferRecipientWallets]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getTransfers0()
+    public function getTransferRecipientWallets()
     {
         return $this->hasMany(Transfer::class, ['id_recipient_wallet' => 'id']);
     }
