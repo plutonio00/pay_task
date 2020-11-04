@@ -2,103 +2,97 @@
 
 namespace app\models;
 
-class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
+use Yii;
+
+/**
+ * This is the model class for table "user".
+ *
+ * @property int $id
+ * @property string $first* @property string $last_name
+ * @property int $is_male
+ * @property string $login
+ * @property string $email
+ * @property string $password
+ * @property string $created_at
+ * @property string $updated_at
+ *
+ * @property Transfer[] $transfers
+ * @property Transfer[] $transfers0
+ * @property Wallet[] $wallets
+ */
+class User extends \yii\db\ActiveRecord
 {
-    public $id;
-    public $username;
-    public $password;
-    public $authKey;
-    public $accessToken;
-
-    private static $users = [
-        '100' => [
-            'id' => '100',
-            'username' => 'admin',
-            'password' => 'admin',
-            'authKey' => 'test100key',
-            'accessToken' => '100-token',
-        ],
-        '101' => [
-            'id' => '101',
-            'username' => 'demo',
-            'password' => 'demo',
-            'authKey' => 'test101key',
-            'accessToken' => '101-token',
-        ],
-    ];
-
-
     /**
      * {@inheritdoc}
      */
-    public static function findIdentity($id)
+    public static function tableName()
     {
-        return isset(self::$users[$id]) ? new static(self::$users[$id]) : null;
+        return 'user';
     }
 
     /**
      * {@inheritdoc}
      */
-    public static function findIdentityByAccessToken($token, $type = null)
+    public function rules()
     {
-        foreach (self::$users as $user) {
-            if ($user['accessToken'] === $token) {
-                return new static($user);
-            }
-        }
-
-        return null;
+        return [
+            [['id', 'first_name', 'last_name', 'is_male', 'login', 'email', 'password'], 'required'],
+            [['id', 'is_male'], 'integer'],
+            [['created_at', 'updated_at'], 'safe'],
+            [['first_name', 'last_name'], 'string', 'max' => 45],
+            [['login', 'email'], 'string', 'max' => 60],
+            [['password'], 'string', 'max' => 200],
+            [['login'], 'unique'],
+            [['email'], 'unique'],
+            [['id'], 'unique'],
+        ];
     }
 
     /**
-     * Finds user by username
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'first_name' => 'First Name',
+            'last_name' => 'Last Name',
+            'is_male' => 'Is Male',
+            'login' => 'Login',
+            'email' => 'Email',
+            'password' => 'Password',
+            'created_at' => 'Created At',
+            'updated_at' => 'Updated At',
+        ];
+    }
+
+    /**
+     * Gets query for [[Transfers]].
      *
-     * @param string $username
-     * @return static|null
+     * @return \yii\db\ActiveQuery
      */
-    public static function findByUsername($username)
+    public function getTransfers()
     {
-        foreach (self::$users as $user) {
-            if (strcasecmp($user['username'], $username) === 0) {
-                return new static($user);
-            }
-        }
-
-        return null;
+        return $this->hasMany(Transfer::class, ['id_sender' => 'id']);
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getAuthKey()
-    {
-        return $this->authKey;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function validateAuthKey($authKey)
-    {
-        return $this->authKey === $authKey;
-    }
-
-    /**
-     * Validates password
+     * Gets query for [[Transfers0]].
      *
-     * @param string $password password to validate
-     * @return bool if password provided is valid for current user
+     * @return \yii\db\ActiveQuery
      */
-    public function validatePassword($password)
+    public function getTransfers0()
     {
-        return $this->password === $password;
+        return $this->hasMany(Transfer::class, ['id_recipient' => 'id']);
+    }
+
+    /**
+     * Gets query for [[Wallets]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getWallets()
+    {
+        return $this->hasMany(Wallet::class, ['id_user' => 'id']);
     }
 }

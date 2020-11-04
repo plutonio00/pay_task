@@ -7,3 +7,7 @@ docker-compose up -d
 
 docker exec -ti pay_task_php bash
 composer install
+exit
+cd ..
+
+sudo chgrp -R www-data .
