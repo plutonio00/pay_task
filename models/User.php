@@ -68,7 +68,7 @@ class User extends \yii\db\ActiveRecord
     }
 
     /**
-     * Gets query for [[Transfers]].
+     * Gets query for [[TransferRecipients]].
      *
      * @return \yii\db\ActiveQuery
      */
@@ -78,7 +78,7 @@ class User extends \yii\db\ActiveRecord
     }
 
     /**
-     * Gets query for [[Transfers0]].
+     * Gets query for [[TransferSenders]].
      *
      * @return \yii\db\ActiveQuery
      */
