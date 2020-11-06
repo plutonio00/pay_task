@@ -2,8 +2,12 @@
 
 namespace app\models;
 
+use Yii;
+use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\db\Expression;
+use yii\web\IdentityInterface;
 
 /**
  * This is the model class for table "user".
@@ -22,12 +26,17 @@ use yii\db\ActiveRecord;
  * @property Transfer[] $transferSenders
  * @property Wallet[] $wallets
  */
-class User extends ActiveRecord
+class User extends ActiveRecord implements IdentityInterface
 {
+    public $authKey;
+
     public function behaviors()
     {
         return [
-            TimestampBehavior::class,
+            [
+                'class' => TimestampBehavior::class,
+                'value' => new Expression('NOW()'),
+            ],
         ];
     }
 
@@ -45,15 +54,14 @@ class User extends ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'first_name', 'last_name', 'is_male', 'login', 'email', 'password'], 'required'],
-            [['id', 'is_male'], 'integer'],
+            [['first_name', 'last_name', 'is_male', 'login', 'email', 'password'], 'required'],
+            [['is_male'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
             [['first_name', 'last_name'], 'string', 'max' => 45],
             [['login', 'email'], 'string', 'max' => 60],
             [['password'], 'string', 'max' => 200],
             [['login'], 'unique'],
             [['email'], 'unique'],
-            [['id'], 'unique'],
         ];
     }
 
@@ -103,5 +111,43 @@ class User extends ActiveRecord
     public function getWallets()
     {
         return $this->hasMany(Wallet::class, ['id_user' => 'id']);
+    }
+
+    public static function findByLoginOrEmail(string $attribute)
+    {
+        return static::find()
+            ->where(['login' => $attribute])
+            ->orWhere(['email' => $attribute])
+            ->one();
+    }
+
+    public static function findIdentity($id)
+    {
+        return static::findOne(['id' => $id]);
+    }
+
+    public static function findIdentityByAccessToken($token, $type = null)
+    {
+        throw new NotSupportedException('Token authentication is not supported!');
+    }
+
+    public function getId()
+    {
+        return $this->getPrimaryKey();
+    }
+
+    public function getAuthKey()
+    {
+        return $this->authKey;
+    }
+
+    public function validateAuthKey($authKey)
+    {
+        return $this->authKey === $authKey;
+    }
+
+    public function validatePassword(string $password)
+    {
+        return Yii::$app->security->validatePassword($password, $this->password);
     }
 }

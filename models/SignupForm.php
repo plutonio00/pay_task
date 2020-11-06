@@ -1,14 +1,43 @@
 <?php
 
-
 namespace app\models;
 
+use yii\base\Model;
 
-class SignupForm
+class SignupForm extends Model
 {
-    public string $username;
-    public string $email;
-    public string $password;
-    public string $confirmPassword;
+    public $first_name;
+    public $last_name;
+    public $is_male;
+    public $login;
+    public $email;
+    public $password;
+    public $confirm_password;
 
+    public function attributeLabels()
+    {
+        return [
+            'is_male' => 'Gender',
+        ];
+    }
+
+    /**
+     * @return array the validation rules.
+     */
+    public function rules()
+    {
+        return [
+            [['login', 'email', 'first_name', 'last_name', 'is_male', 'password', 'confirm_password'], 'required'],
+            ['email', 'email'],
+            [['login'], 'unique', 'targetClass' => User::class, 'message' => 'This username has already been taken.'],
+            [['email'], 'unique', 'targetClass' => User::class, 'message' => 'This email has already been taken.'],
+            ['password', 'confirmPassword'],
+        ];
+    }
+
+    public function confirmPassword($attribute) {
+        if (!$this->hasErrors() && $this->password !== $this->confirm_password) {
+            $this->addError($attribute, 'Passwords are not match.');
+        }
+    }
 }
