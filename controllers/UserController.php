@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\WalletForm;
 use Yii;
 use app\models\User;
 use app\models\search\UserSearch;
@@ -27,21 +28,6 @@ class UserController extends Controller
                 ],
             ],
         ];
-    }
-
-    /**
-     * Lists all User models.
-     * @return mixed
-     */
-    public function actionIndex()
-    {
-        $searchModel = new UserSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
     }
 
     /**
@@ -126,7 +112,7 @@ class UserController extends Controller
     }
 
     public function actionProfile($login) {
-        $model = User::findOne(['login' => $login]);
+        $model = User::getAccountInfo($login);
 
         if(!$model) {
             return $this->render('/site/error', [
@@ -136,6 +122,7 @@ class UserController extends Controller
 
         return $this->render('profile', [
             'model' => $model,
+            'wallet_form' => new WalletForm(),
         ]);
     }
 }

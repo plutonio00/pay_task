@@ -31,13 +31,7 @@ class SignupForm extends Model
             ['email', 'email'],
             [['login'], 'unique', 'targetClass' => User::class, 'message' => 'This username has already been taken.'],
             [['email'], 'unique', 'targetClass' => User::class, 'message' => 'This email has already been taken.'],
-            ['password', 'confirmPassword'],
+            ['password', 'compare', 'compareAttribute' => 'confirm_password'],
         ];
-    }
-
-    public function confirmPassword($attribute) {
-        if (!$this->hasErrors() && $this->password !== $this->confirm_password) {
-            $this->addError($attribute, 'Passwords are not match.');
-        }
     }
 }

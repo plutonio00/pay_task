@@ -122,8 +122,15 @@ class User extends ActiveRecord implements IdentityInterface
             ->one();
     }
 
-    public function getFullName() {
+    public function getFullName(): string {
         return sprintf('%s %s', $this->first_name, $this->last_name);
+    }
+
+    public static function getAccountInfo(string $login) {
+        return static::find()
+            ->with('wallets')
+            ->where(['login' => $login])
+            ->one();
     }
 
     public static function findIdentity($id)
