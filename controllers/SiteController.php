@@ -35,12 +35,12 @@ class SiteController extends Controller
                     ],
                 ],
             ],
-//            'verbs' => [
-//                'class' => VerbFilter::class,
-//                'actions' => [
-//                    'logout' => ['post'],
-//                ],
-//            ],
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'logout' => ['get'],
+                ],
+            ],
         ];
     }
 
@@ -117,10 +117,8 @@ class SiteController extends Controller
             if ($user->save()) {
                 Yii::$app->user->login($user, 0);
 
-                return $this->redirect(['/user/account', 'id' => $user->id]);
+                return $this->redirect('/user/' . $user->login);
             }
-            var_dump($user->errors);
-            die;
         }
 
         return $this->render('signup', ['model' => $model]);

@@ -5,6 +5,7 @@ namespace app\models;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
 use yii\web\IdentityInterface;
@@ -86,7 +87,7 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * Gets query for [[TransferRecipients]].
      *
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getTransferRecipients()
     {
@@ -96,7 +97,7 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * Gets query for [[TransferSenders]].
      *
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getTransferSenders()
     {
@@ -106,7 +107,7 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * Gets query for [[Wallets]].
      *
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getWallets()
     {
@@ -119,6 +120,10 @@ class User extends ActiveRecord implements IdentityInterface
             ->where(['login' => $attribute])
             ->orWhere(['email' => $attribute])
             ->one();
+    }
+
+    public function getFullName() {
+        return sprintf('%s %s', $this->first_name, $this->last_name);
     }
 
     public static function findIdentity($id)
