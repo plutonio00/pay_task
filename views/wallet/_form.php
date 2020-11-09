@@ -2,15 +2,19 @@
 
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
+use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\WalletForm */
+/* @var $model app\models\Wallet */
 /* @var $form yii\bootstrap\ActiveForm */
 ?>
 
 <div class="wallet-form">
 
+    <?php Pjax::begin() ?>
+
     <?php $form = ActiveForm::begin([
+        'action' => ['/wallet/add'],
         'id' => 'create-wallet-form',
         'layout' => 'horizontal',
         'fieldConfig' => [
@@ -30,10 +34,12 @@ use yii\bootstrap\ActiveForm;
 
     <div class="form-group">
         <div class="col-lg-offset-1 col-lg-11">
-            <?= Html::submitButton('Create', ['class' => 'btn btn-success']) ?>
+            <?= Html::submitButton('Add wallet', ['class' => 'btn btn-success']) ?>
         </div>
     </div>
 
     <?php ActiveForm::end(); ?>
+
+    <?php Pjax::end() ?>
 
 </div>

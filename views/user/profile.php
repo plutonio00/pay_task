@@ -4,9 +4,9 @@
 
 /* @var app\models\User $model */
 /* @var ArrayDataProvider $dataProvider */
-/* @var WalletForm $wallet_form */
+/* @var Wallet $wallet */
 
-use app\models\WalletForm;
+use app\models\Wallet;
 use yii\bootstrap\Tabs;
 use yii\data\ArrayDataProvider;
 use yii\helpers\Html;
@@ -26,19 +26,19 @@ $this->title = 'Profile';
                 [
                     'label' => 'Wallets',
                     'content' => $this->render('/wallet/_user_wallets', [
-                        'wallet_form' => $wallet_form,
-                        'model' => $model,
+                        'wallet' => $wallet,
+                        'user_wallets' => $model->getWallets(),
                     ]),
                     'active' => true, // указывает на активность вкладки
                     'options' => [
-                        'class' => 'border pl',
+                        'class' => 'border plr',
                     ]
                 ],
                 [
                     'label' => 'Transfers',
                     //'content' => $this->render('/transfer/_user_transfers'),
                     'options' => [
-                        'class' => 'border pl',
+                        'class' => 'border plr',
                     ]
                 ],
             ],

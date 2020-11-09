@@ -1,29 +1,30 @@
 <?php
 
-use app\models\WalletForm;
+use app\models\Wallet;
 use yii\data\ActiveDataProvider;
 use yii\grid\GridView;
 
-/* @var ActiveDataProvider $wallets */
-/* @var WalletForm $wallet_form */
+/* @var ActiveDataProvider $user_wallets */
+/* @var Wallet $wallet */
 
-echo $this->render('_form', ['model' => $wallet_form]);
+echo $this->render('_form', ['model' => $wallet]);
 
-if ($wallets) {
+if ($user_wallets) {
     echo GridView::widget([
-        'dataProvider' => $wallets,
+        'dataProvider' => new ActiveDataProvider([
+            'query' => $user_wallets
+        ]),
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
             'title',
             'amount',
             'created_at',
             'updated_at',
-
             ['class' => 'yii\grid\ActionColumn'],
         ],
+        'options' => [
+            'class' => 'mt-2',
+        ]
     ]);
-}
-else {
-    echo '<p class="mt">You haven\'t any wallets yet</p>';
 }
 
