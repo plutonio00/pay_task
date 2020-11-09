@@ -118,8 +118,16 @@ a.desc:after {
    margin-top: 3rem;
 }
 
+.mt-2 {
+    margin-top: 6rem;
+}
+
 .pl {
     padding-left: 3rem;
+}
+
+.plr {
+    padding: 0 3rem;
 }
 
 .border {

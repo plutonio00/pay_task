@@ -46,9 +46,13 @@ class Wallet extends ActiveRecord
     public function rules()
     {
         return [
-            [['id_user', 'title'], 'required'],
+            [['id_user', 'title', 'amount'], 'required'],
             [['id_user'], 'integer'],
-            [['amount'], 'number'],
+            [
+                ['amount'], 'number', 'numberPattern' => '/^\d{1,11}\.\d{1,2}$/',
+                'message' => 'Amount must be a decimal number with 1 to 11 digits and 1 to 2 decimal places. Separate the whole part from the fractional part with the symbol  \'.\''
+            ],
+            //[['amount'], 'max' => 13],
             [['created_at', 'updated_at'], 'safe'],
             [['title'], 'string', 'max' => 200],
             [['id_user'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['id_user' => 'id']],
@@ -65,8 +69,8 @@ class Wallet extends ActiveRecord
             'id_user' => 'Id User',
             'title' => 'Title',
             'amount' => 'Amount',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+            'created_at' => 'Created at',
+            'updated_at' => 'Updated at',
         ];
     }
 

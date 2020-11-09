@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Wallet;
 use app\models\WalletForm;
 use Yii;
 use app\models\User;
@@ -122,7 +123,7 @@ class UserController extends Controller
 
         return $this->render('profile', [
             'model' => $model,
-            'wallet_form' => new WalletForm(),
+            'wallet' => new Wallet(),
         ]);
     }
 }
