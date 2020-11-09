@@ -11,7 +11,9 @@ use yii\widgets\Pjax;
 
 <div class="wallet-form">
 
-    <?php Pjax::begin() ?>
+    <?php Pjax::begin([
+        'enablePushState' => false,
+    ]) ?>
 
     <?php $form = ActiveForm::begin([
         'action' => ['/wallet/add'],
@@ -22,7 +24,8 @@ use yii\widgets\Pjax;
             'labelOptions' => ['class' => 'col-lg-1 control-label'],
         ],
         'options' => [
-            'class' => 'mt'
+            'class' => 'mt',
+            'data-pjax' => true,
         ]
     ]); ?>
 
