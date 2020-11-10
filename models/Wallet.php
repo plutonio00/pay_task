@@ -54,6 +54,7 @@ class Wallet extends ActiveRecord
             ],
             //[['amount'], 'max' => 13],
             [['created_at', 'updated_at'], 'safe'],
+            [['title'], 'unique'],
             [['title'], 'string', 'max' => 200],
             [['id_user'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['id_user' => 'id']],
         ];
