@@ -11,21 +11,16 @@ use yii\widgets\Pjax;
 
 <div class="wallet-form">
 
-    <?php Pjax::begin([
-        'enablePushState' => false,
-    ]) ?>
-
     <?php $form = ActiveForm::begin([
-        'action' => ['/wallet/add'],
-        'id' => 'create-wallet-form',
+        'id' => 'add-wallet-form',
         'layout' => 'horizontal',
         'fieldConfig' => [
             'template' => "{label}\n<div class=\"col-lg-4\">{input}</div>\n<div class=\"col-lg-7\">{error}</div>",
             'labelOptions' => ['class' => 'col-lg-1 control-label'],
         ],
         'options' => [
-            'class' => 'mt',
-            'data-pjax' => true,
+            'class' => 'mt add-form',
+            'data-entity-name' => 'wallet',
         ]
     ]); ?>
 
@@ -42,7 +37,4 @@ use yii\widgets\Pjax;
     </div>
 
     <?php ActiveForm::end(); ?>
-
-    <?php Pjax::end() ?>
-
 </div>

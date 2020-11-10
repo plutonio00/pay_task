@@ -13,6 +13,9 @@ use yii\helpers\Html;
 
 $this->title = 'Profile';
 
+$this->registerJSFile('/js/common/jquery.js');
+$this->registerJsFile('/js/addEntities.js');
+
 ?>
 <div class="user-view">
     <h1><?= $model->getFullName() ?></h1>

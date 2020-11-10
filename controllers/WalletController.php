@@ -66,7 +66,7 @@ class WalletController extends Controller
     {
         $model = new Wallet();
 
-        if (Yii::$app->request->isPjax && $model->load(Yii::$app->request->post())) {
+        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
             $model->id_user = Yii::$app->getUser()->id;
 
             if ($model->save()){

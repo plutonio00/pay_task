@@ -11,7 +11,11 @@ use yii\widgets\Pjax;
 echo $this->render('_form', ['model' => $wallet]);
 
 if ($user_wallets) {
-    Pjax::begin();
+
+    Pjax::begin([
+        'id' => 'wallet-list-grid-view'
+    ]);
+
     echo GridView::widget([
         'dataProvider' => new ActiveDataProvider([
             'query' => $user_wallets
