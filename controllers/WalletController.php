@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\ReplenishForm;
 use Yii;
 use app\models\Wallet;
 use yii\data\ActiveDataProvider;
@@ -62,7 +63,7 @@ class WalletController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionAdd()
+    public function actionCreate()
     {
         $model = new Wallet();
 
@@ -70,9 +71,7 @@ class WalletController extends Controller
             $model->id_user = Yii::$app->getUser()->id;
 
             if ($model->save()) {
-                return [
-                    'result' => 'success',
-                ];
+                return json_encode(['result' => 'success']);
             }
         }
     }
@@ -91,5 +90,39 @@ class WalletController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function actionGetReplenishForm() {
+
+        if (Yii::$app->request->isAjax && Yii::$app->request->isPost) {
+            $idWallet = Yii::$app->request->post('id');
+
+            $model = $this->findModel($idWallet);
+            $replenishForm = new ReplenishForm();
+
+            $replenishForm->id_wallet = $model->id;
+
+            return $this->renderAjax('_replenish_form', [
+                'model' => $replenishForm,
+                'title' => $model->title,
+            ]);
+        }
+
+        $this->render('error', [
+            'message' => 'Page not found',
+        ]);
+    }
+
+    public function actionReplenish() {
+        $replenishForm = new ReplenishForm();
+
+        if ($replenishForm->load(Yii::$app->request->post()) && $replenishForm->validate()) {
+            $model = $this->findModel($replenishForm->id_wallet);
+            $model->amount += $replenishForm->amount;
+
+            if ($model->save()) {
+                return json_encode(['result' => 'success']);
+            }
+        }
     }
 }

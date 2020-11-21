@@ -49,8 +49,8 @@ class Wallet extends ActiveRecord
             [['id_user', 'title', 'amount'], 'required'],
             [['id_user'], 'integer'],
             [
-                ['amount'], 'number', 'numberPattern' => '/^\d{1,11}(\.\d{1,2})?$/',
-                'message' => 'Amount must be a decimal number with 1 to 11 digits and 1 to 2 optional decimal places. Separate the whole part from the fractional part with the symbol  \'.\''
+                ['amount'], 'number', 'numberPattern' => Constants::AMOUNT_PATTERN,
+                'message' => Constants::INVALID_AMOUNT_MESSAGE,
             ],
             //[['amount'], 'max' => 13],
             [['created_at', 'updated_at'], 'safe'],

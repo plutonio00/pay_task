@@ -133,3 +133,10 @@ a.desc:after {
 .border {
     border: solid 1px #dee2e6;
 }
+
+.btn-icon {
+    font-size: 15px;
+    margin-right: 10px;
+    color: #0e32b2;
+    cursor: pointer;
+}

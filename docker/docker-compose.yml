@@ -24,8 +24,6 @@ services:
 
   mysql:
     image: mysql/mysql-server:8.0.22
-#    volumes:
-#      - ./mysql/dump:/docker-entrypoint-initdb.d
     container_name: pay_task_mysql
     environment:
       - MYSQL_DATABASE=${MYSQL_DATABASE}

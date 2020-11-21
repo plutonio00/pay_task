@@ -7,6 +7,7 @@
 /* @var Wallet $wallet */
 
 use app\models\Wallet;
+use yii\bootstrap\Modal;
 use yii\bootstrap\Tabs;
 use yii\data\ArrayDataProvider;
 use yii\helpers\Html;
@@ -14,7 +15,7 @@ use yii\helpers\Html;
 $this->title = 'Profile';
 
 $this->registerJSFile('/js/common/jquery.js');
-$this->registerJsFile('/js/addEntities.js');
+$this->registerJsFile('/js/profile.js');
 
 ?>
 <div class="user-view">
@@ -28,7 +29,7 @@ $this->registerJsFile('/js/addEntities.js');
             'items' => [
                 [
                     'label' => 'Wallets',
-                    'content' => $this->render('/wallet/_user_wallets', [
+                    'content' => $this->render('/user/_wallets', [
                         'wallet' => $wallet,
                         'user_wallets' => $model->getWallets(),
                     ]),
@@ -45,9 +46,17 @@ $this->registerJsFile('/js/addEntities.js');
                     ]
                 ],
             ],
+            'options' => [
+                'id' => 'profile-tab'
+            ]
         ]);
         ?>
 
     </div>
+
+    <?php Modal::begin([
+        'id' => 'entity-actions-modal',
+    ]); ?>
+    <?php Modal::end(); ?>
 
 </div>

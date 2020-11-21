@@ -2,7 +2,6 @@
 
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
-use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Wallet */
@@ -12,14 +11,17 @@ use yii\widgets\Pjax;
 <div class="wallet-form">
 
     <?php $form = ActiveForm::begin([
-        'id' => 'add-wallet-form',
+        'id' => 'create-wallet-form',
+        'action' => '/wallet/create',
         'layout' => 'horizontal',
+//        'enableAjaxValidation' => true,
+//        'validationUrl' => '/wallet/validate',
         'fieldConfig' => [
             'template' => "{label}\n<div class=\"col-lg-4\">{input}</div>\n<div class=\"col-lg-7\">{error}</div>",
             'labelOptions' => ['class' => 'col-lg-1 control-label'],
         ],
         'options' => [
-            'class' => 'mt add-form',
+            'class' => 'mt create-form',
             'data-entity-name' => 'wallet',
         ]
     ]); ?>
