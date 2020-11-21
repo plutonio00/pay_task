@@ -1,4 +1,4 @@
-<?php
+<?php use yii\web\JqueryAsset;
 
 /* @var $this yii\web\View */
 
@@ -13,9 +13,7 @@ use yii\data\ArrayDataProvider;
 use yii\helpers\Html;
 
 $this->title = 'Profile';
-
-$this->registerJSFile('/js/common/jquery.js');
-$this->registerJsFile('/js/profile.js');
+$this->registerJsFile('/js/profile.js', ['depends' => JqueryAsset::class]);
 
 ?>
 <div class="user-view">
