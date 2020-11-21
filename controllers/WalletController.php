@@ -6,9 +6,13 @@ use app\models\ReplenishForm;
 use Yii;
 use app\models\Wallet;
 use yii\data\ActiveDataProvider;
+use yii\validators\ValidationAsset;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\JqueryAsset;
+use yii\web\YiiAsset;
+use yii\widgets\ActiveFormAsset;
 
 /**
  * WalletController implements the CRUD actions for Wallet model.
@@ -101,6 +105,13 @@ class WalletController extends Controller
             $replenishForm = new ReplenishForm();
 
             $replenishForm->id_wallet = $model->id;
+
+            Yii::$app->assetManager->bundles = [
+                JqueryAsset::class => false,
+                YiiAsset::class => false,
+                ValidationAsset::class => false,
+                ActiveFormAsset::class => false,
+            ];
 
             return $this->renderAjax('_replenish_form', [
                 'model' => $replenishForm,
