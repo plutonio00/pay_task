@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Wallet */
@@ -14,8 +15,7 @@ use yii\bootstrap\ActiveForm;
         'id' => 'create-wallet-form',
         'action' => '/wallet/create',
         'layout' => 'horizontal',
-//        'enableAjaxValidation' => true,
-//        'validationUrl' => '/wallet/validate',
+        'enableAjaxValidation' => true,
         'fieldConfig' => [
             'template' => "{label}\n<div class=\"col-lg-4\">{input}</div>\n<div class=\"col-lg-7\">{error}</div>",
             'labelOptions' => ['class' => 'col-lg-1 control-label'],

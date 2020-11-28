@@ -5,12 +5,14 @@ namespace app\controllers;
 use app\models\ReplenishForm;
 use Yii;
 use app\models\Wallet;
+use yii\bootstrap\ActiveForm;
 use yii\data\ActiveDataProvider;
 use yii\validators\ValidationAsset;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\JqueryAsset;
+use yii\web\Response;
 use yii\web\YiiAsset;
 use yii\widgets\ActiveFormAsset;
 
@@ -72,7 +74,15 @@ class WalletController extends Controller
         $model = new Wallet();
 
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
+
             $model->id_user = Yii::$app->getUser()->id;
+
+            $errors = ActiveForm::validate($model);
+
+            if ($errors) {
+                Yii::$app->response->format = Response::FORMAT_JSON;
+                return $errors;
+            }
 
             if ($model->save()) {
                 return json_encode(['result' => 'success']);
