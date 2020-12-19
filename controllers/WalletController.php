@@ -71,6 +71,8 @@ class WalletController extends Controller
      */
     public function actionCreate()
     {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
         $model = new Wallet();
 
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
@@ -80,14 +82,21 @@ class WalletController extends Controller
             $errors = ActiveForm::validate($model);
 
             if ($errors) {
-                Yii::$app->response->format = Response::FORMAT_JSON;
                 return $errors;
             }
 
-            if ($model->save()) {
-                return json_encode(['result' => 'success']);
+            $formWasSubmit = Yii::$app->request->post('submit-btn');
+
+            if (isset($formWasSubmit) && $model->save()) {
+                return ['result' => 'success'];
             }
+
+            return ['result' => 'success'];
         }
+
+        return $this->render('error', [
+            'message' => 'Page not found',
+        ]);
     }
 
     /**
@@ -129,12 +138,14 @@ class WalletController extends Controller
             ]);
         }
 
-        $this->render('error', [
+        return $this->render('error', [
             'message' => 'Page not found',
         ]);
     }
 
     public function actionReplenish() {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
         $replenishForm = new ReplenishForm();
 
         if ($replenishForm->load(Yii::$app->request->post()) && $replenishForm->validate()) {
@@ -142,7 +153,7 @@ class WalletController extends Controller
             $model->amount += $replenishForm->amount;
 
             if ($model->save()) {
-                return json_encode(['result' => 'success']);
+                return ['result' => 'success'];
             }
         }
     }

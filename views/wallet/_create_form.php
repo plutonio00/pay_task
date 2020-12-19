@@ -34,7 +34,10 @@ use yii\helpers\Url;
 
     <div class="form-group">
         <div class="col-lg-offset-1 col-lg-11">
-            <?= Html::submitButton('Add wallet', ['class' => 'btn btn-success']) ?>
+            <?= Html::submitButton('Add wallet', [
+                    'class' => 'btn btn-success',
+                    'name' => 'submit-btn'
+            ]) ?>
         </div>
     </div>
 
