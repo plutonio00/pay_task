@@ -19,9 +19,21 @@ $(function () {
 
     $('.entity-grid-view').on('click', '.btn-icon', handlerGridViewClick);
 
-    // $('#profile-tab').on('click', function () {
-    //
-    // });
+    $('#transfers-tab-header').on('click', function () {
+        console.log(111);
+        let $transfersTabContent = $('#transfers-tab-content');
+        let idUser = $(this).data('idUser');
+
+        if ($transfersTabContent.empty()) {
+            $.post({
+                url: '/transfer/get-tab-content',
+                data: { id_user: idUser },
+                success: function (html) {
+                    $transfersTabContent.append(html);
+                }
+            });
+        }
+    });
 
     $('#entity-actions-modal').on('beforeSubmit', 'form', function () {
         let form = $(this);

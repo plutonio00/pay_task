@@ -8,6 +8,8 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
+use yii\db\Query;
+use yii\helpers\ArrayHelper;
 use yii\web\IdentityInterface;
 
 /**
@@ -89,7 +91,7 @@ class User extends ActiveRecord implements IdentityInterface
      *
      * @return ActiveQuery
      */
-    public function getTransferRecipients()
+    public function getTransferRecipients(): ActiveQuery
     {
         return $this->hasMany(Transfer::class, ['id_recipient' => 'id']);
     }
@@ -99,7 +101,7 @@ class User extends ActiveRecord implements IdentityInterface
      *
      * @return ActiveQuery
      */
-    public function getTransferSenders()
+    public function getTransferSenders(): ActiveQuery
     {
         return $this->hasMany(Transfer::class, ['id_sender' => 'id']);
     }
@@ -109,9 +111,17 @@ class User extends ActiveRecord implements IdentityInterface
      *
      * @return ActiveQuery
      */
-    public function getWallets()
+    public function getWallets(): ActiveQuery
     {
         return $this->hasMany(Wallet::class, ['id_user' => 'id']);
+    }
+
+    public function getAllTransfers(): ActiveQuery
+    {
+        return $this
+            ->hasMany(Transfer::class, [])
+            ->onCondition(['id_recipient' => 'id'])
+            ->orOnCondition(['id_sender' => 'id']);
     }
 
     public static function findByLoginOrEmail(string $attribute)
@@ -122,11 +132,27 @@ class User extends ActiveRecord implements IdentityInterface
             ->one();
     }
 
-    public function getFullName(): string {
+    public function getFullName(): string
+    {
         return sprintf('%s %s', $this->first_name, $this->last_name);
     }
 
-    public static function getAccountInfo(string $login) {
+    /**
+     * @return array
+     */
+    public function getWalletsArray(): array
+    {
+        $wallets = $this->getWallets()
+            ->asArray()
+            ->all()
+        ;
+
+        $tmp = ArrayHelper::map($wallets, 'id', 'title');
+        return $tmp;
+    }
+
+    public static function getAccountInfo(string $login)
+    {
         return static::find()
             ->with('wallets')
             ->where(['login' => $login])
@@ -148,18 +174,20 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->getPrimaryKey();
     }
 
-    public function getAuthKey()
+    public function getAuthKey(): string
     {
         return $this->authKey;
     }
 
-    public function validateAuthKey($authKey)
+    public function validateAuthKey($authKey): bool
     {
         return $this->authKey === $authKey;
     }
 
-    public function validatePassword(string $password)
+    public function validatePassword(string $password): bool
     {
         return Yii::$app->security->validatePassword($password, $this->password);
     }
+
+
 }

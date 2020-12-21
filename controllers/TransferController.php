@@ -2,17 +2,17 @@
 
 namespace app\controllers;
 
-use app\models\Wallet;
-use Yii;
 use app\models\User;
+use Yii;
+use app\models\Transfer;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * UserController implements the CRUD actions for User model.
+ * TransferController implements the CRUD actions for Transfer model.
  */
-class UserController extends Controller
+class TransferController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -30,26 +30,13 @@ class UserController extends Controller
     }
 
     /**
-     * Displays a single User model.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionView($id)
-    {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
-
-    /**
-     * Creates a new User model.
+     * Creates a new Transfer model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new User();
+        $model = new Transfer();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -61,7 +48,7 @@ class UserController extends Controller
     }
 
     /**
-     * Updates an existing User model.
+     * Updates an existing Transfer model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -81,7 +68,7 @@ class UserController extends Controller
     }
 
     /**
-     * Deletes an existing User model.
+     * Deletes an existing Transfer model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -95,34 +82,32 @@ class UserController extends Controller
     }
 
     /**
-     * Finds the User model based on its primary key value.
+     * Finds the Transfer model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return User the loaded model
+     * @return Transfer the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = User::findOne($id)) !== null) {
+        if (($model = Transfer::findOne($id)) !== null) {
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
-    public function actionProfile($login): string
-    {
-        $model = User::getAccountInfo($login);
+    public function actionGetTabContent() {
 
-        if(!$model) {
-            return $this->render('/site/error', [
-               'message' => 'User not found',
-            ]);
-        }
+        $idUser = Yii::$app->request->post('id_user');
+        $user = User::findOne(['id' => $idUser]);
 
-        return $this->render('profile', [
+        $model = new Transfer();
+        $this->layout = false;
+
+        return $this->render('_transfers_tab_content', [
             'model' => $model,
-            'wallet' => new Wallet(),
+            'user' => $user,
         ]);
     }
 }

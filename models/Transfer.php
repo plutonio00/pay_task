@@ -72,9 +72,9 @@ class Transfer extends ActiveRecord
         return [
             'id' => 'ID',
             'id_sender' => 'Id Sender',
-            'id_sender_wallet' => 'Id Sender Wallet',
+            'id_sender_wallet' => 'Your wallet',
             'id_recipient' => 'Id Recipient',
-            'id_recipient_wallet' => 'Id Recipient Wallet',
+            'id_recipient_wallet' => 'Recipient\'s wallet id',
             'amount' => 'Amount',
             'exec_time' => 'Exec Time',
             'id_status' => 'Id Status',

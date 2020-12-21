@@ -31,16 +31,20 @@ $this->registerJsFile('/js/profile.js', ['depends' => JqueryAsset::class]);
                         'wallet' => $wallet,
                         'user_wallets' => $model->getWallets(),
                     ]),
-                    'active' => true, // указывает на активность вкладки
+                    'active' => true,
                     'options' => [
                         'class' => 'border plr',
                     ]
                 ],
                 [
                     'label' => 'Transfers',
-                    //'content' => $this->render('/transfer/_user_transfers'),
+                     'headerOptions' => [
+                        'id' => 'transfers-tab-header',
+                         'data-id-user' => Yii::$app->user->getId(),
+                    ],
                     'options' => [
                         'class' => 'border plr',
+                        'id' => 'transfers-tab-content',
                     ]
                 ],
             ],
