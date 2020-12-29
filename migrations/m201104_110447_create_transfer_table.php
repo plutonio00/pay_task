@@ -14,9 +14,7 @@ class m201104_110447_create_transfer_table extends Migration
     {
         $this->createTable('{{%transfer}}', [
             'id' => $this->primaryKey(),
-            'id_sender' => $this->integer()->notNull(),
             'id_sender_wallet' => $this->integer()->notNull(),
-            'id_recipient' => $this->integer()->notNull(),
             'id_recipient_wallet' => $this->integer()->notNull(),
             'amount' => $this->decimal(11, 2)->notNull(),
             'exec_time' => $this->timestamp(),
