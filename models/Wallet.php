@@ -3,6 +3,7 @@
 namespace app\models;
 
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
 
@@ -78,9 +79,9 @@ class Wallet extends ActiveRecord
     /**
      * Gets query for [[TransferSenderWallets]].
      *
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getTransferSenderWallets()
+    public function getTransferSenderWallets(): ActiveQuery
     {
         return $this->hasMany(Transfer::class, ['id_sender_wallet' => 'id']);
     }
@@ -88,19 +89,27 @@ class Wallet extends ActiveRecord
     /**
      * Gets query for [[TransferRecipientWallets]].
      *
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getTransferRecipientWallets()
+    public function getTransferRecipientWallets(): ActiveQuery
     {
         return $this->hasMany(Transfer::class, ['id_recipient_wallet' => 'id']);
+    }
+
+    public function getAllTransfers(): ActiveQuery
+    {
+        return $this
+            ->hasMany(Transfer::class, [])
+            ->onCondition(['id_recipient_wallet' => 'id'])
+            ->orOnCondition(['id_sender_wallet' => 'id']);
     }
 
     /**
      * Gets query for [[User]].
      *
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getUser()
+    public function getUser(): ActiveQuery
     {
         return $this->hasOne(User::class, ['id' => 'id_user']);
     }

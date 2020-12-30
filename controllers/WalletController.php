@@ -85,9 +85,9 @@ class WalletController extends Controller
                 return $errors;
             }
 
-            $formWasSubmit = Yii::$app->request->post('submit-btn');
+            $formWasSubmit = Yii::$app->request->post('was_submit');
 
-            if (isset($formWasSubmit) && $model->save()) {
+            if ($formWasSubmit && $model->save()) {
                 return ['result' => 'success'];
             }
 

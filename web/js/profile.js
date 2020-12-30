@@ -2,10 +2,12 @@ $(function () {
     $('.create-form').on('beforeSubmit', function () {
         let form = $(this);
         let entityName = form.data('entityName');
+        let formData = form.serializeArray();
+        formData.push({name: 'was_submit', value: true});
 
         $.post({
             url: form.attr('action'),
-            data: form.serializeArray(),
+            data: formData,
             success: function () {
                 resetForm(form.attr('id'));
                 let entityGridId = `#${entityName}-list-grid-view`;
@@ -20,7 +22,6 @@ $(function () {
     $('.entity-grid-view').on('click', '.btn-icon', handlerGridViewClick);
 
     $('#transfers-tab-header').on('click', function () {
-        console.log(111);
         let $transfersTabContent = $('#transfers-tab-content');
         let idUser = $(this).data('idUser');
 

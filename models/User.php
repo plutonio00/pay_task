@@ -25,8 +25,6 @@ use yii\web\IdentityInterface;
  * @property string $created_at
  * @property string $updated_at
  *
- * @property Transfer[] $transferRecipients
- * @property Transfer[] $transferSenders
  * @property Wallet[] $wallets
  */
 class User extends ActiveRecord implements IdentityInterface
@@ -87,26 +85,6 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * Gets query for [[TransferRecipients]].
-     *
-     * @return ActiveQuery
-     */
-    public function getTransferRecipients(): ActiveQuery
-    {
-        return $this->hasMany(Transfer::class, ['id_recipient' => 'id']);
-    }
-
-    /**
-     * Gets query for [[TransferSenders]].
-     *
-     * @return ActiveQuery
-     */
-    public function getTransferSenders(): ActiveQuery
-    {
-        return $this->hasMany(Transfer::class, ['id_sender' => 'id']);
-    }
-
-    /**
      * Gets query for [[Wallets]].
      *
      * @return ActiveQuery
@@ -116,12 +94,13 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->hasMany(Wallet::class, ['id_user' => 'id']);
     }
 
-    public function getAllTransfers(): ActiveQuery
+    public function getTransfers(): ActiveQuery
     {
-        return $this
-            ->hasMany(Transfer::class, [])
-            ->onCondition(['id_recipient' => 'id'])
-            ->orOnCondition(['id_sender' => 'id']);
+        return self::find()
+            ->innerJoinWith('wallets.allTransfers')
+            ->where([
+                'user.id' => $this->id,
+            ]);
     }
 
     public static function findByLoginOrEmail(string $attribute)
@@ -147,8 +126,7 @@ class User extends ActiveRecord implements IdentityInterface
             ->all()
         ;
 
-        $tmp = ArrayHelper::map($wallets, 'id', 'title');
-        return $tmp;
+        return ArrayHelper::map($wallets, 'id', 'title');
     }
 
     public static function getAccountInfo(string $login)

@@ -20,7 +20,7 @@ Pjax::begin([
 
 echo GridView::widget([
     'dataProvider' => new ActiveDataProvider([
-        'query' => $user->getAllTransfers(),
+        'query' => $user->getTransfers(),
     ]),
     'emptyText' => 'You haven\'t any transfers',
     'columns' => [
@@ -32,6 +32,7 @@ echo GridView::widget([
         'exec_time',
         'id_status',
         'created_at',
+        'updated_at',
         [
             'class' => 'yii\grid\ActionColumn',
 //            'header' => 'Replenish the balance',
