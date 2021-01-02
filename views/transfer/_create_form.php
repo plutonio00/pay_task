@@ -36,7 +36,7 @@ use yii\helpers\Html;
         'name' => 'dp_1',
         'convertFormat' => true,
         'pluginOptions' => [
-            'format' => 'dd.MM.yyyy HH:ii',
+            'format' => 'dd.MM.yyyy HH:00',
             'autoclose' => true,
             'weekStart' => 1,
             'startDate' => date('Y-m-d'),
