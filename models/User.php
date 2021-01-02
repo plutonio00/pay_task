@@ -97,7 +97,7 @@ class User extends ActiveRecord implements IdentityInterface
     public function getTransfers(): ActiveQuery
     {
         return self::find()
-            ->innerJoinWith('wallets.allTransfers')
+            ->innerJoinWith('wallets.allTransfers.status')
             ->where([
                 'user.id' => $this->id,
             ]);

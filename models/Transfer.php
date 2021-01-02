@@ -2,6 +2,9 @@
 
 namespace app\models;
 
+use DateTime;
+use Exception;
+use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
@@ -10,9 +13,7 @@ use yii\db\Expression;
  * This is the model class for table "transfer".
  *
  * @property int $id
- * @property int $id_sender
  * @property int $id_sender_wallet
- * @property int $id_recipient
  * @property int $id_recipient_wallet
  * @property float $amount
  * @property string $exec_time
@@ -26,6 +27,10 @@ use yii\db\Expression;
  */
 class Transfer extends ActiveRecord
 {
+    protected const SENDER_TYPE = 'sender';
+    protected const EXEC_TIME_FORMAT = 'd.m.Y H:i';
+    protected const WALLET_DOES_NOT_EXIST = 'Wallet with such id doesn\'t exist';
+
     public function behaviors()
     {
         return [
@@ -50,17 +55,32 @@ class Transfer extends ActiveRecord
     public function rules()
     {
         return [
-            [['id_sender', 'id_sender_wallet', 'id_recipient', 'id_recipient_wallet', 'amount', 'exec_time', 'id_status', 'created_at', 'updated_at'], 'required'],
-            [['id_sender', 'id_sender_wallet', 'id_recipient', 'id_recipient_wallet', 'id_status'], 'integer'],
+            [['id_sender_wallet', 'id_recipient_wallet', 'amount', 'exec_time', 'id_status'], 'required'],
+            [['id_sender_wallet', 'id_recipient_wallet', 'id_status'], 'integer'],
             [
                 ['amount'], 'number', 'numberPattern' => Constants::AMOUNT_PATTERN,
                 'message' => Constants::INVALID_AMOUNT_MESSAGE,
             ],
-            [['exec_time', 'created_at', 'updated_at'], 'safe'],
-            [['id_sender_wallet'], 'exist', 'skipOnError' => true, 'targetClass' => Wallet::class, 'targetAttribute' => ['id_sender_wallet' => 'id']],
-            [['id_sender_wallet'], 'validateIdSenderWallet'],
-            [['id_recipient_wallet'], 'exist', 'skipOnError' => true, 'targetClass' => Wallet::class, 'targetAttribute' => ['id_recipient_wallet' => 'id']],
-            [['id_status'], 'exist', 'skipOnError' => true, 'targetClass' => TransferStatus::class, 'targetAttribute' => ['id_status' => 'id']],
+            [['created_at', 'updated_at'], 'safe'],
+            ['exec_time', 'validateExecTime'],
+            [
+                ['id_sender_wallet'], 'exist', 'skipOnError' => false,
+                'targetClass' => Wallet::class, 'targetAttribute' => ['id_sender_wallet' => 'id'],
+                'message' => self::WALLET_DOES_NOT_EXIST,
+            ],
+            [['id_sender_wallet'], 'validateWallet', 'params' => ['type' => self::SENDER_TYPE]],
+            [
+                ['id_recipient_wallet'], 'exist', 'skipOnError' => false,
+                'targetClass' => Wallet::class,
+                'targetAttribute' => ['id_recipient_wallet' => 'id'],
+                'message' => self::WALLET_DOES_NOT_EXIST,
+            ],
+            ['id_recipient_wallet', 'compare', 'compareAttribute' => 'id_sender_wallet',
+                'operator' => '!==',
+                'message' => 'You must choose different wallets!'
+            ],
+            [['id_recipient_wallet'], 'validateWallet', 'params' => ['type' => 'recipient']],
+            [['id_status'], 'exist', 'skipOnError' => false, 'targetClass' => TransferStatus::class, 'targetAttribute' => ['id_status' => 'id']],
         ];
     }
 
@@ -111,34 +131,50 @@ class Transfer extends ActiveRecord
         return $this->hasOne(TransferStatus::class, ['id' => 'id_status']);
     }
 
-    public function validateIdSenderWallet(string $attribute): void {
-        if (!$this->hasErrors()) {
-            $wallet = Wallet::findOne([
-                'id_user' => $this->id_sender,
-                'id' => $this->id_sender_wallet,
-            ]);
+    public function validateWallet(string $attribute, array $params): void
+    {
+        if ($this->hasErrors()) {
+            return;
+        }
 
-            if (!$wallet) {
-                $this->addError($attribute, 'You haven\'t such wallet');
-            }
+        $type = $params['type'];
+        $wallet = Wallet::findOne([
+            'id' => $this->{sprintf('id_%s_wallet', $type)},
+        ]);
+
+        if (!$wallet) {
+            $this->addError($attribute, 'Such wallet doesn\'t exist');
+            return;
+        }
+
+        if ($type === self::SENDER_TYPE && $wallet->id_user !== Yii::$app->user->getId()) {
+            $this->addError($attribute, 'You cannot make a transfer from someone else\'s wallet');
+            return;
         }
     }
 
-    public function validateIdRecipientWallet(string $attribute): void {
-        if (!$this->hasErrors()) {
-            $wallet = Wallet::findOne([
-                'id' => $this->id_sender_wallet,
-            ]);
-
-            if (!$wallet) {
-                $this->addError($attribute, 'Such wallet doesn\'t exist');
-            }
+    public function validateExecTime(string $attribute): void
+    {
+        try {
+            $datetime = DateTime::createFromFormat(self::EXEC_TIME_FORMAT, $this->exec_time);
+        } catch (Exception $e) {
+            $this->addError($attribute, 'Unexpected problem! Try again.');
+            return;
         }
-    }
 
-    public function validateExecTime(string $attribute) {
-        if (!$this->hasErrors()) {
+        if (!$datetime) {
+            $this->addError($attribute, 'Incorrect time format! Use the calendar on the form to select the date.');
+            return;
+        }
 
+        $now = new DateTime();
+
+        if ($datetime < $now) {
+            $this->addError($attribute, sprintf(
+                    'You need to select a date and time later than %s',
+                    $now->format(self::EXEC_TIME_FORMAT))
+            );
+            return;
         }
     }
 }

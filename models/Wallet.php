@@ -53,11 +53,10 @@ class Wallet extends ActiveRecord
                 ['amount'], 'number', 'numberPattern' => Constants::AMOUNT_PATTERN,
                 'message' => Constants::INVALID_AMOUNT_MESSAGE,
             ],
-            //[['amount'], 'max' => 13],
             [['created_at', 'updated_at'], 'safe'],
             [['title'], 'unique'],
             [['title'], 'string', 'max' => 200],
-            [['id_user'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['id_user' => 'id']],
+            [['id_user'], 'exist', 'skipOnError' => false, 'targetClass' => User::class, 'targetAttribute' => ['id_user' => 'id']],
         ];
     }
 

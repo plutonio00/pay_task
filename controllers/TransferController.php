@@ -2,18 +2,22 @@
 
 namespace app\controllers;
 
+use app\models\TransferStatus;
 use app\models\User;
 use Yii;
 use app\models\Transfer;
+use yii\bootstrap\ActiveForm;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\Response;
 
 /**
  * TransferController implements the CRUD actions for Transfer model.
  */
 class TransferController extends Controller
 {
+    protected const IN_PROGRESS = 'in progress';
     /**
      * {@inheritdoc}
      */
@@ -36,14 +40,30 @@ class TransferController extends Controller
      */
     public function actionCreate()
     {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
         $model = new Transfer();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
+
+            $model->id_status = TransferStatus::getIdByTitle(self::IN_PROGRESS);
+            $errors = ActiveForm::validate($model);
+
+            if ($errors) {
+                return $errors;
+            }
+
+            $formWasSubmit = Yii::$app->request->post('submit-btn');
+
+            if (isset($formWasSubmit) && $model->save()) {
+                return ['result' => 'success'];
+            }
+
+            return ['result' => 'success'];
         }
 
-        return $this->render('create', [
-            'model' => $model,
+        return $this->render('/site/error', [
+            'message' => 'Page not found',
         ]);
     }
 
@@ -105,7 +125,7 @@ class TransferController extends Controller
         $model = new Transfer();
         $this->layout = false;
 
-        return $this->render('_transfers_tab_content', [
+        return $this->renderAjax('_transfers_tab_content', [
             'model' => $model,
             'user' => $user,
         ]);

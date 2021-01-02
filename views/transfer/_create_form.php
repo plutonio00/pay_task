@@ -27,7 +27,7 @@ use yii\helpers\Html;
         ]
     ]); ?>
 
-    <h4 class="mt col-lg-offset-1">Add new wallet</h4>
+    <h4 class="mt col-lg-offset-1">Add new transfer</h4>
 
     <?= $form->field($model, 'id_sender_wallet')->dropDownList($user->getWalletsArray()) ?>
     <?= $form->field($model, 'id_recipient_wallet')->textInput(['maxlength' => true]) ?>

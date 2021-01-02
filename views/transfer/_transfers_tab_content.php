@@ -30,7 +30,7 @@ echo GridView::widget([
         'id_recipient_wallet',
         'amount',
         'exec_time',
-        'id_status',
+        'transfer_status.title' => 'status',
         'created_at',
         'updated_at',
         [

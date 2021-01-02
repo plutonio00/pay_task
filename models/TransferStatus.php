@@ -40,7 +40,7 @@ class TransferStatus extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'title' => 'Title',
+            'title' => 'Status',
         ];
     }
 
@@ -52,5 +52,11 @@ class TransferStatus extends ActiveRecord
     public function getTransfers()
     {
         return $this->hasMany(Transfer::class, ['id_status' => 'id']);
+    }
+
+    public static function getIdByTitle(string $title) {
+        return self::findOne([
+           'title' => $title,
+        ])['id'];
     }
 }
