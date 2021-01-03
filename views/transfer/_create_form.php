@@ -48,10 +48,7 @@ use yii\helpers\Html;
 
     <div class="form-group">
         <div class="col-lg-offset-1 col-lg-11">
-            <?= Html::submitButton('Add transfer', [
-                'class' => 'btn btn-success',
-                'name' => 'submit-btn'
-            ]) ?>
+            <?= Html::submitButton('Add transfer', ['class' => 'btn btn-success']) ?>
         </div>
     </div>
 

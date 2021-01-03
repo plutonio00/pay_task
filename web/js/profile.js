@@ -1,5 +1,5 @@
 $(function () {
-    $('.create-form').on('beforeSubmit', function () {
+    $('#profile-tab-wrapper').on('beforeSubmit', '.create-form', function () {
         let form = $(this);
         let entityName = form.data('entityName');
         let formData = form.serializeArray();

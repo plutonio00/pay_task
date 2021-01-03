@@ -25,7 +25,7 @@ class TransferController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -53,7 +53,7 @@ class TransferController extends Controller
                 return $errors;
             }
 
-            $formWasSubmit = Yii::$app->request->post('submit-btn');
+            $formWasSubmit = Yii::$app->request->post('was_submit');
 
             if (isset($formWasSubmit) && $model->save()) {
                 return ['result' => 'success'];
@@ -93,6 +93,8 @@ class TransferController extends Controller
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
      */
     public function actionDelete($id)
     {

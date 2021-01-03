@@ -21,7 +21,7 @@ $this->registerJsFile('/js/profile.js', ['depends' => JqueryAsset::class]);
 
     <?= Html::a('Log out', '/site/logout', ['class' => 'profile-link']) ?>
 
-    <div class="mt">
+    <div id="profile-tab-wrapper" class="mt">
 
         <?php echo Tabs::widget([
             'items' => [
@@ -48,9 +48,6 @@ $this->registerJsFile('/js/profile.js', ['depends' => JqueryAsset::class]);
                     ]
                 ],
             ],
-            'options' => [
-                'id' => 'profile-tab'
-            ]
         ]);
         ?>
 
