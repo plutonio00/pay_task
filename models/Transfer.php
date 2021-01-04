@@ -5,6 +5,7 @@ namespace app\models;
 use DateTime;
 use Exception;
 use Yii;
+use yii\behaviors\AttributeBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
@@ -38,6 +39,16 @@ class Transfer extends ActiveRecord
                 'class' => TimestampBehavior::class,
                 'value' => new Expression('NOW()'),
             ],
+            [
+                'class' => AttributeBehavior::class,
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'exec_time',
+                    ActiveRecord::EVENT_AFTER_UPDATE => 'exec_time',
+                ],
+                'value' => function ($model) {
+                    return date('Y-m-d H:i:s', strtotime($model->sender->exec_time));
+                }
+            ]
         ];
     }
 
