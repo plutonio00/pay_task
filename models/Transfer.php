@@ -22,6 +22,8 @@ use yii\db\Expression;
  * @property string $created_at
  * @property string $updated_at
  *
+ * @property User $sender
+ * @property User $recipient
  * @property Wallet $senderWallet
  * @property Wallet $recipientWallet
  * @property TransferStatus $status
@@ -66,8 +68,10 @@ class Transfer extends ActiveRecord
     public function rules()
     {
         return [
-            [['id_sender_wallet', 'id_recipient_wallet', 'amount', 'exec_time', 'id_status'], 'required'],
-            [['id_sender_wallet', 'id_recipient_wallet', 'id_status'], 'integer'],
+            [['id_sender', 'id_sender_wallet', 'id_recipient', 'id_recipient_wallet', 'amount', 'exec_time', 'id_status'], 'required'],
+            [['id_sender', 'id_sender_wallet', 'id_recipient', 'id_recipient_wallet', 'id_status'], 'integer'],
+            [['id_sender'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['id_sender' => 'id']],
+            [['id_recipient'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['id_recipient' => 'id']],
             [
                 ['amount'], 'number', 'numberPattern' => Constants::AMOUNT_PATTERN,
                 'message' => Constants::INVALID_AMOUNT_MESSAGE,
@@ -102,7 +106,9 @@ class Transfer extends ActiveRecord
     {
         return [
             'id' => 'ID',
+            'id_sender' => 'Id Sender',
             'id_sender_wallet' => 'Your wallet',
+            'id_recipient' => 'Id Recipient',
             'id_recipient_wallet' => 'Recipient\'s wallet id',
             'amount' => 'Amount',
             'exec_time' => 'Exec Time',
@@ -110,6 +116,26 @@ class Transfer extends ActiveRecord
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
         ];
+    }
+
+    /**
+     * Gets query for [[Sender]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSender()
+    {
+        return $this->hasOne(User::class, ['id' => 'id_sender']);
+    }
+
+    /**
+     * Gets query for [[Recipient]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getRecipient()
+    {
+        return $this->hasOne(User::class, ['id' => 'id_recipient']);
     }
 
     /**

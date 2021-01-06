@@ -23,6 +23,23 @@ class m201104_111454_create_fk_all extends Migration
         );
 
         //transfer keys
+        $this->addForeignKey(
+            'fk_transfer_sender',
+            'transfer',
+            'id_sender',
+            'user',
+            'id',
+            'RESTRICT'
+        );
+
+        $this->addForeignKey(
+            'fk_transfer_recipient',
+            'transfer',
+            'id_recipient',
+            'user',
+            'id',
+            'RESTRICT'
+        );
 
         $this->addForeignKey(
             'fk_transfer_sender_wallet',
@@ -60,6 +77,8 @@ class m201104_111454_create_fk_all extends Migration
     public function safeDown()
     {
         $this->dropForeignKey('fk_wallet_user', 'wallet');
+        $this->dropForeignKey('fk_transfer_sender', 'transfer');
+        $this->dropForeignKey('fk_transfer_recipient', 'transfer');
         $this->dropForeignKey('fk_transfer_sender_wallet', 'transfer');
         $this->dropForeignKey('fk_transfer_recipient_wallet', 'transfer');
         $this->dropForeignKey('fk_transfer_status', 'transfer');
