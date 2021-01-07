@@ -26,6 +26,8 @@ use yii\web\IdentityInterface;
  * @property string $updated_at
  *
  * @property Wallet[] $wallets
+ * @property Transfer[] $recipientTransfers
+ * @property Transfer[] $senderTransfers
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -135,6 +137,26 @@ class User extends ActiveRecord implements IdentityInterface
             ->with('wallets')
             ->where(['login' => $login])
             ->one();
+    }
+
+    /**
+     * Gets query for [[RecipientTransfers]].
+     *
+     * @return ActiveQuery
+     */
+    public function getRecipientTransfers(): ActiveQuery
+    {
+        return $this->hasMany(Transfer::class, ['id_recipient' => 'id']);
+    }
+
+    /**
+     * Gets query for [[SenderTransfers]].
+     *
+     * @return ActiveQuery
+     */
+    public function getSenderTransfers(): ActiveQuery
+    {
+        return $this->hasMany(Transfer::class, ['id_sender' => 'id']);
     }
 
     public static function findIdentity($id)

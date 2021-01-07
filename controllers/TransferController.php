@@ -4,6 +4,8 @@ namespace app\controllers;
 
 use app\models\TransferStatus;
 use app\models\User;
+use app\models\Wallet;
+use app\utils\ArrayUtils;
 use Yii;
 use app\models\Transfer;
 use yii\bootstrap\ActiveForm;
@@ -46,17 +48,39 @@ class TransferController extends Controller
 
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
 
-            $model->id_status = TransferStatus::getIdByTitle(self::IN_PROGRESS);
             $errors = ActiveForm::validate($model);
 
-            if ($errors) {
-                return $errors;
+            /**
+             * Due to the fact that ajax validation is used, the model has to be partially validated.
+             * Otherwise, you would either have to create a separate class for the form,
+             * which would lead to duplicate code,
+             * or make additional queries to the database with each attempt to validate.
+            */
+            $model->validate(Transfer::FIELDS_FOR_FORM_VALIDATION);
+
+            if ($model->errors) {
+                /**
+                 * Converting an array of model errors to an array of errors of ActiveForm
+                 * to display errors on the form
+                */
+                return ArrayUtils::addPrefixToAllKeys(Transfer::tableName() . '-', $model->errors);
             }
 
             $formWasSubmit = Yii::$app->request->post('was_submit');
 
-            if (isset($formWasSubmit) && $model->save()) {
-                return ['result' => 'success'];
+            if (isset($formWasSubmit)) {
+
+                $model->id_status = TransferStatus::getIdByTitle(self::IN_PROGRESS);
+                $model->id_sender = Yii::$app->user->getId();
+                $recipientWallet = Wallet::findOne([
+                    'id' => $model->id_recipient_wallet,
+                ]);
+
+                $model->id_recipient = $recipientWallet->id_user;
+
+                if ($model->save()) {
+                    return ['result' => 'success'];
+                }
             }
 
             return ['result' => 'success'];

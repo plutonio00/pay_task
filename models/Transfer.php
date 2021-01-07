@@ -14,6 +14,8 @@ use yii\db\Expression;
  * This is the model class for table "transfer".
  *
  * @property int $id
+ * @property int $id_sender
+ * @property int $id_recipient
  * @property int $id_sender_wallet
  * @property int $id_recipient_wallet
  * @property float $amount
@@ -33,6 +35,9 @@ class Transfer extends ActiveRecord
     protected const SENDER_TYPE = 'sender';
     protected const EXEC_TIME_FORMAT = 'd.m.Y H:i';
     protected const WALLET_DOES_NOT_EXIST = 'Wallet with such id doesn\'t exist';
+    public const FIELDS_FOR_FORM_VALIDATION = [
+        'id_sender_wallet', 'id_recipient_wallet', 'amount', 'exec_time'
+    ];
 
     public function behaviors()
     {
@@ -95,7 +100,7 @@ class Transfer extends ActiveRecord
                 'message' => 'You must choose different wallets!'
             ],
             [['id_recipient_wallet'], 'validateWallet', 'params' => ['type' => 'recipient']],
-            [['id_status'], 'exist', 'skipOnError' => false, 'targetClass' => TransferStatus::class, 'targetAttribute' => ['id_status' => 'id']],
+            [['id_status'], 'exist', 'skipOnError' => true, 'targetClass' => TransferStatus::class, 'targetAttribute' => ['id_status' => 'id']],
         ];
     }
 
