@@ -47,9 +47,6 @@ class TransferController extends Controller
         $model = new Transfer();
 
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
-
-            $errors = ActiveForm::validate($model);
-
             /**
              * Due to the fact that ajax validation is used, the model has to be partially validated.
              * Otherwise, you would either have to create a separate class for the form,
