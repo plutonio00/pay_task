@@ -23,12 +23,10 @@ $(function () {
 
     $('#transfers-tab-header').on('click', function () {
         let $transfersTabContent = $('#transfers-tab-content');
-        let idUser = $(this).data('idUser');
 
         if ($transfersTabContent.empty()) {
             $.post({
                 url: '/transfer/get-tab-content',
-                data: { id_user: idUser },
                 success: function (html) {
                     $transfersTabContent.append(html);
                 }

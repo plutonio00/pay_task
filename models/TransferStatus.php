@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use app\exceptions\TransferStatusNotFoundException;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -14,6 +16,9 @@ use yii\db\ActiveRecord;
  */
 class TransferStatus extends ActiveRecord
 {
+    public const IN_PROGRESS = 'in progress';
+    public const DONE = 'done';
+
     /**
      * {@inheritdoc}
      */
@@ -47,16 +52,25 @@ class TransferStatus extends ActiveRecord
     /**
      * Gets query for [[Transfers]].
      *
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getTransfers()
+    public function getTransfers(): ActiveQuery
     {
         return $this->hasMany(Transfer::class, ['id_status' => 'id']);
     }
 
-    public static function getIdByTitle(string $title) {
-        return self::findOne([
+    public static function getIdByTitle(string $title): int
+    {
+        $statusId = self::findOne([
            'title' => $title,
         ])['id'];
+
+        if (!$statusId) {
+            throw new TransferStatusNotFoundException(
+                sprintf('Status \'%s\' not found in database', $title)
+            );
+        }
+
+        return $statusId;
     }
 }

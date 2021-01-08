@@ -7,6 +7,7 @@ use Exception;
 use Yii;
 use yii\behaviors\AttributeBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
 
@@ -28,6 +29,7 @@ use yii\db\Expression;
  * @property User $recipient
  * @property Wallet $senderWallet
  * @property Wallet $recipientWallet
+ * @property Wallet[] $wallets
  * @property TransferStatus $status
  */
 class Transfer extends ActiveRecord
@@ -112,7 +114,7 @@ class Transfer extends ActiveRecord
         return [
             'id' => 'ID',
             'id_sender' => 'Id Sender',
-            'id_sender_wallet' => 'Your wallet',
+            'id_sender_wallet' => 'Sender wallet',
             'id_recipient' => 'Id Recipient',
             'id_recipient_wallet' => 'Recipient\'s wallet id',
             'amount' => 'Amount',
@@ -126,7 +128,7 @@ class Transfer extends ActiveRecord
     /**
      * Gets query for [[Sender]].
      *
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getSender()
     {
@@ -136,7 +138,7 @@ class Transfer extends ActiveRecord
     /**
      * Gets query for [[Recipient]].
      *
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getRecipient()
     {
@@ -146,7 +148,7 @@ class Transfer extends ActiveRecord
     /**
      * Gets query for [[SenderWallet]].
      *
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getSenderWallet()
     {
@@ -156,7 +158,7 @@ class Transfer extends ActiveRecord
     /**
      * Gets query for [[RecipientWallet]].
      *
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getRecipientWallet()
     {
@@ -166,11 +168,30 @@ class Transfer extends ActiveRecord
     /**
      * Gets query for [[Status]].
      *
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getStatus()
     {
         return $this->hasOne(TransferStatus::class, ['id' => 'id_status']);
+    }
+
+    public static function getTransfers(array $joinTables): ActiveQuery
+    {
+        return self::find()
+            ->innerJoinWith($joinTables);
+    }
+
+    public static function getTransfersForUser(int $idUser) {
+        $idStatusDone = TransferStatus::getIdByTitle(TransferStatus::DONE);
+
+        return self::getTransfers(['recipientWallet', 'senderWallet', 'status'])
+            ->where(['id_sender' => $idUser])
+            ->orWhere([
+                'and',
+                ['id_recipient' => $idUser],
+                ['id_status' => $idStatusDone],
+                'id_sender <> id_recipient'
+            ]);
     }
 
     public function validateWallet(string $attribute, array $params): void

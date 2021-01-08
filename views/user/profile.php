@@ -40,7 +40,6 @@ $this->registerJsFile('/js/profile.js', ['depends' => JqueryAsset::class]);
                     'label' => 'Transfers',
                      'headerOptions' => [
                         'id' => 'transfers-tab-header',
-                         'data-id-user' => Yii::$app->user->getId(),
                     ],
                     'options' => [
                         'class' => 'border plr',

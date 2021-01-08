@@ -8,7 +8,6 @@ use app\models\Wallet;
 use app\utils\ArrayUtils;
 use Yii;
 use app\models\Transfer;
-use yii\bootstrap\ActiveForm;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -19,7 +18,6 @@ use yii\web\Response;
  */
 class TransferController extends Controller
 {
-    protected const IN_PROGRESS = 'in progress';
     /**
      * {@inheritdoc}
      */
@@ -67,8 +65,10 @@ class TransferController extends Controller
 
             if (isset($formWasSubmit)) {
 
-                $model->id_status = TransferStatus::getIdByTitle(self::IN_PROGRESS);
+                $model->id_status = TransferStatus::getIdByTitle(TransferStatus::IN_PROGRESS);
                 $model->id_sender = Yii::$app->user->getId();
+
+                /** @var Wallet $recipientWallet */
                 $recipientWallet = Wallet::findOne([
                     'id' => $model->id_recipient_wallet,
                 ]);
@@ -142,15 +142,14 @@ class TransferController extends Controller
 
     public function actionGetTabContent() {
 
-        $idUser = Yii::$app->request->post('id_user');
-        $user = User::findOne(['id' => $idUser]);
-
         $model = new Transfer();
         $this->layout = false;
+        $idUser = Yii::$app->user->getId();
 
         return $this->renderAjax('_transfers_tab_content', [
             'model' => $model,
-            'user' => $user,
+            'transfers' => Transfer::getTransfersForUser($idUser),
+            'user' => User::findOne(['id' => $idUser]),
         ]);
     }
 }
