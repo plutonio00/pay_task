@@ -27,18 +27,20 @@ echo GridView::widget([
     'emptyText' => 'You haven\'t any transfers',
     'columns' => [
         ['class' => 'yii\grid\SerialColumn'],
-//        [
-//            'attribute' => 'id_recipient_wallet',
-//            'value' => function(Transfer $data) {
-//                $tmp = $data->wallets;
-//                return $data;
-//            }
-//        ],
-
-        'id_sender_wallet',
+        [
+            'attribute' => 'id_sender_wallet',
+            'value' => fn(Transfer $data) => $data->getDisplayWalletDataForOwner('sender'),
+        ],
+        [
+            'attribute' => 'id_recipient_wallet',
+            'value' => fn(Transfer $data) => $data->getDisplayWalletDataForOwner('recipient'),
+        ],
         'amount',
         'exec_time',
-        //'ts.title' => 'status',
+        [
+            'attribute' => 'status',
+            'value' => fn(Transfer $data) => $data->status->title,
+        ],
         'created_at',
         'updated_at',
         [

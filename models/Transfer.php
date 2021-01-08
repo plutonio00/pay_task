@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\exceptions\TransferStatusNotFoundException;
 use DateTime;
 use Exception;
 use Yii;
@@ -29,7 +30,6 @@ use yii\db\Expression;
  * @property User $recipient
  * @property Wallet $senderWallet
  * @property Wallet $recipientWallet
- * @property Wallet[] $wallets
  * @property TransferStatus $status
  */
 class Transfer extends ActiveRecord
@@ -114,14 +114,14 @@ class Transfer extends ActiveRecord
         return [
             'id' => 'ID',
             'id_sender' => 'Id Sender',
-            'id_sender_wallet' => 'Sender wallet',
+            'id_sender_wallet' => 'Sender\'s wallet',
             'id_recipient' => 'Id Recipient',
-            'id_recipient_wallet' => 'Recipient\'s wallet id',
+            'id_recipient_wallet' => 'Recipient\'s wallet',
             'amount' => 'Amount',
-            'exec_time' => 'Exec Time',
-            'id_status' => 'Id Status',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+            'exec_time' => 'Execute time',
+            'id_status' => 'Id status',
+            'created_at' => 'Created at',
+            'updated_at' => 'Updated at',
         ];
     }
 
@@ -178,10 +178,17 @@ class Transfer extends ActiveRecord
     public static function getTransfers(array $joinTables): ActiveQuery
     {
         return self::find()
-            ->innerJoinWith($joinTables);
+            ->innerJoinWith($joinTables)
+            ;
     }
 
-    public static function getTransfersForUser(int $idUser) {
+    /**
+     * @param int $idUser
+     * @return ActiveQuery
+     * @throws TransferStatusNotFoundException
+     */
+    public static function getTransfersForUser(int $idUser): ActiveQuery
+    {
         $idStatusDone = TransferStatus::getIdByTitle(TransferStatus::DONE);
 
         return self::getTransfers(['recipientWallet', 'senderWallet', 'status'])
@@ -192,6 +199,11 @@ class Transfer extends ActiveRecord
                 ['id_status' => $idStatusDone],
                 'id_sender <> id_recipient'
             ]);
+    }
+
+    public function getDisplayWalletDataForOwner($walletType) {
+        $wallet = $this->{$walletType . 'Wallet'};
+        return $wallet->id_user === Yii::$app->user->getId() ? $wallet->title : $wallet->id;
     }
 
     public function validateWallet(string $attribute, array $params): void
