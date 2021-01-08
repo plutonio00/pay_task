@@ -8,7 +8,6 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
-use yii\db\Query;
 use yii\helpers\ArrayHelper;
 use yii\web\IdentityInterface;
 
@@ -96,15 +95,6 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->hasMany(Wallet::class, ['id_user' => 'id']);
     }
 
-    public function getTransfers(): ActiveQuery
-    {
-        return self::find()
-            ->innerJoinWith('wallets.allTransfers.status')
-            ->where([
-                'user.id' => $this->id,
-            ]);
-    }
-
     public static function findByLoginOrEmail(string $attribute)
     {
         return static::find()
@@ -188,6 +178,4 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return Yii::$app->security->validatePassword($password, $this->password);
     }
-
-
 }
