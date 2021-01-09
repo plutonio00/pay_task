@@ -50,7 +50,7 @@ echo GridView::widget([
             'header' => 'Actions',
             'template' => '{retry}{cancel}',
             'buttons' => [
-                'cancel' => function ($url, $dataProvider) {
+                'cancel' => function ($url, Transfer $dataProvider): string {
                     if ($dataProvider->status->title === TransferStatus::IN_PROGRESS) {
                         return Html::tag('span', '', [
                             'class' => 'glyphicon glyphicon-remove-circle btn-icon cancel-btn text-danger',
@@ -60,7 +60,7 @@ echo GridView::widget([
                     }
                     return '';
                 },
-                'retry' => function ($url, $dataProvider) {
+                'retry' => function ($url, Transfer $dataProvider): string {
                     if ($dataProvider->status->title === TransferStatus::ERROR) {
                         return Html::tag('span', '', [
                             'class' => 'glyphicon glyphicon-repeat btn-icon retry-btn',

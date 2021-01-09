@@ -182,6 +182,14 @@ class Transfer extends ActiveRecord
             ->innerJoinWith($joinTables);
     }
 
+    public static function getTransfersInProgress() {
+
+        return self::getTransfers(['recipientWallet', 'senderWallet'])
+            ->where([
+                'id_status' => TransferStatus::getIdByTitle(TransferStatus::IN_PROGRESS),
+            ])->all();
+    }
+
     /**
      * @param int $idUser
      * @return ActiveQuery
