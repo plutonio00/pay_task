@@ -83,6 +83,7 @@ class Transfer extends ActiveRecord
                 ['amount'], 'number', 'numberPattern' => Constants::AMOUNT_PATTERN,
                 'message' => Constants::INVALID_AMOUNT_MESSAGE,
             ],
+            ['amount', 'validateAmount', 'message' => '111'],
             [['created_at', 'updated_at'], 'safe'],
             ['exec_time', 'validateExecTime'],
             [
@@ -178,8 +179,7 @@ class Transfer extends ActiveRecord
     public static function getTransfers(array $joinTables): ActiveQuery
     {
         return self::find()
-            ->innerJoinWith($joinTables)
-            ;
+            ->innerJoinWith($joinTables);
     }
 
     /**
@@ -201,7 +201,8 @@ class Transfer extends ActiveRecord
             ]);
     }
 
-    public function getDisplayWalletDataForOwner($walletType) {
+    public function getDisplayWalletDataForOwner($walletType)
+    {
         $wallet = $this->{$walletType . 'Wallet'};
         return $wallet->id_user === Yii::$app->user->getId() ? $wallet->title : $wallet->id;
     }
@@ -249,6 +250,37 @@ class Transfer extends ActiveRecord
                     'You need to select a date and time later than %s',
                     $now->format(self::EXEC_TIME_FORMAT))
             );
+            return;
+        }
+    }
+
+    public function validateAmount(string $attribute): void
+    {
+
+        $idStatusInProgress = TransferStatus::getIdByTitle(TransferStatus::IN_PROGRESS);
+        $sumAmountTransfers = self::find()
+            ->where([
+                'id_sender' => Yii::$app->user->getId(),
+                'id_sender_wallet' => $this->id_sender_wallet,
+                'id_status' => $idStatusInProgress
+            ])
+            ->sum('amount');
+
+        $sumAmountTransfers += $this->amount;
+
+        /**
+         * @var Wallet $senderWallet
+         */
+        $senderWallet = Wallet::findOne([
+            'id' => $this->id_sender_wallet,
+        ]);
+
+        if ($sumAmountTransfers > $senderWallet->amount) {
+            $this->addError($attribute, sprintf(
+                'The amount of transfers that you have planned exceeds the amount on the wallet "%s".
+                Remaining balance after completing scheduled transfers: %s',
+                $senderWallet->title, $senderWallet->amount - $sumAmountTransfers
+            ));
             return;
         }
     }

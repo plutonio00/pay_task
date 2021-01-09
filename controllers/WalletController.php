@@ -94,7 +94,7 @@ class WalletController extends Controller
             return ['result' => 'success'];
         }
 
-        return $this->render('error', [
+        return $this->render('/site/error', [
             'message' => 'Page not found',
         ]);
     }

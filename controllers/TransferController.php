@@ -142,14 +142,21 @@ class TransferController extends Controller
 
     public function actionGetTabContent() {
 
-        $model = new Transfer();
-        $this->layout = false;
-        $idUser = Yii::$app->user->getId();
+        if (Yii::$app->request->isAjax) {
+            $model = new Transfer();
+            $this->layout = false;
+            $idUser = Yii::$app->user->getId();
 
-        return $this->renderAjax('_transfers_tab_content', [
-            'model' => $model,
-            'transfers' => Transfer::getTransfersForUser($idUser),
-            'user' => User::findOne(['id' => $idUser]),
+
+            return $this->renderAjax('_transfers_tab_content', [
+                'model' => $model,
+                'transfers' => Transfer::getTransfersForUser($idUser),
+                'user' => User::findOne(['id' => $idUser]),
+            ]);
+        }
+
+        return $this->render('/site/error', [
+            'message' => 'Page not found',
         ]);
     }
 }
