@@ -1,7 +1,9 @@
 <?php
 
 use app\models\Transfer;
+use app\models\TransferStatus;
 use app\models\User;
+use yii\bootstrap\Html;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
 use yii\grid\GridView;
@@ -45,16 +47,29 @@ echo GridView::widget([
         'updated_at',
         [
             'class' => 'yii\grid\ActionColumn',
-//            'header' => 'Replenish the balance',
-//            'template' => '{replenish}',
+            'header' => 'Actions',
+            'template' => '{retry}{cancel}',
             'buttons' => [
-//                'replenish' => function ($url, $dataProvider) {
-//                    return Html::tag('span', '', [
-//                        'class' => 'glyphicon glyphicon-credit-card btn-icon replenish-btn',
-//                        'title' => 'Replenish the balance',
-//                        'data-id' => $dataProvider['id'],
-//                    ]);
-//                }
+                'cancel' => function ($url, $dataProvider) {
+                    if ($dataProvider->status->title === TransferStatus::IN_PROGRESS) {
+                        return Html::tag('span', '', [
+                            'class' => 'glyphicon glyphicon-remove-circle btn-icon cancel-btn text-danger',
+                            'title' => 'Cancel the transfer',
+                            'data-id' => $dataProvider['id'],
+                        ]);
+                    }
+                    return '';
+                },
+                'retry' => function ($url, $dataProvider) {
+                    if ($dataProvider->status->title === TransferStatus::ERROR) {
+                        return Html::tag('span', '', [
+                            'class' => 'glyphicon glyphicon-repeat btn-icon retry-btn',
+                            'title' => 'Retry to make the transfer',
+                            'data-id' => $dataProvider['id'],
+                        ]);
+                    }
+                    return '';
+                },
             ]
         ],
     ],
