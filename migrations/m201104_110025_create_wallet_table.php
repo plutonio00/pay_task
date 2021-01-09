@@ -15,7 +15,7 @@ class m201104_110025_create_wallet_table extends Migration
         $this->createTable('{{%wallet}}', [
             'id' => $this->primaryKey(),
             'id_user' => $this->integer()->notNull(),
-            'title' => $this->string(200)->unique()->notNull(),
+            'title' => $this->string(200)->notNull(),
             'amount' => $this->decimal(11, 2)->notNull(),
             'created_at' => $this->timestamp()->notNull(),
             'updated_at' => $this->timestamp()->notNull(),
