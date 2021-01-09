@@ -7,7 +7,9 @@ docker-compose up -d
 
 docker exec -ti pay_task_php bash
 composer install
+php yii migrate --interactive=0
+php yii fixture/load "*" --interactive=0
 exit
-cd ..
 
+cd ..
 sudo chgrp -R www-data .
