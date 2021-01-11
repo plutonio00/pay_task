@@ -8,7 +8,19 @@ use tests\unit\fixtures\Constants;
 $transfers = [];
 $faker = Faker\Factory::create();
 $userIds = User::find()->select('id')->asArray()->column();
-$walletIds = Wallet::find()->select('id')->asArray()->column();
+$walletsData = Wallet::find()->select(['id', 'id_user'])->asArray()->all();
+
+$filterWalletDataByIdUser = function (array $walletsData, $idUser): array {
+    $result = [];
+
+    foreach ($walletsData as $item) {
+        if($item['id_user'] === $idUser) {
+            $result[] = $item['id'];
+        }
+    }
+
+    return $result;
+};
 
 $inProgressStatusId = TransferStatus::getIdByTitle(TransferStatus::IN_PROGRESS);
 
@@ -27,17 +39,21 @@ for ($i = 0; $i < Constants::TRANSFER_COUNT; $i++) {
     $updatedAt = $faker->dateTimeBetween($createdAt, '+30 days')
         ->format(Constants::DATE_TIME_FORMAT);
 
-    $currentWallets = $faker->randomElements($walletIds, 2, false);
+    $currentWallets = $faker->randomElements($walletsData, 2, false);
     $execTime = $i > $halfTransferCount ?
         $faker->dateTimeBetween('now', '+10 days') : $faker->dateTimeBetween('-10 days', 'now');
 
-    $idStatus =
+    $idSender = $faker->randomElement($userIds);
+    $idRecipient = $faker->randomElement($userIds);
+
+    $senderWalletsIds = $filterWalletDataByIdUser($walletsData, $idSender);
+    $recipientWalletsIds = $filterWalletDataByIdUser($walletsData, $idRecipient);
 
     $transfers[] = [
-        'id_sender' => $faker->randomElement($userIds),
-        'id_recipient' => $faker->randomElement($userIds),
-        'id_sender_wallet' => $currentWallets[0],
-        'id_recipient_wallet' => $currentWallets[1],
+        'id_sender' => $idSender,
+        'id_recipient' => $idRecipient,
+        'id_sender_wallet' => $faker->randomElement($senderWalletsIds),
+        'id_recipient_wallet' => $faker->randomElement($recipientWalletsIds),
         'amount' => $faker->randomFloat(2, 50, 100),
         'exec_time' => $execTime->format(Constants::DATE_TIME_FORMAT),
         'id_status' => $i > $halfTransferCount ? $inProgressStatusId : $faker->randomElement($statusIds),
