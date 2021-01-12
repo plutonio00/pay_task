@@ -121,9 +121,15 @@ class User extends ActiveRecord implements IdentityInterface
         return ArrayHelper::map($wallets, 'id', 'title');
     }
 
-    public static function getAccountInfo(string $login)
+    public static function getUsersAndWallets(): ActiveQuery
     {
         return static::find()
+            ->with('wallets');
+    }
+
+    public static function getAccountInfo(string $login)
+    {
+        return static::getUsersAndWallets()
             ->with('wallets')
             ->where(['login' => $login])
             ->one();

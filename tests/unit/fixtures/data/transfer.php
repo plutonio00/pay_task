@@ -2,25 +2,12 @@
 
 use app\models\TransferStatus;
 use app\models\User;
-use app\models\Wallet;
 use tests\unit\fixtures\Constants;
 
 $transfers = [];
 $faker = Faker\Factory::create();
-$userIds = User::find()->select('id')->asArray()->column();
-$walletsData = Wallet::find()->select(['id', 'id_user'])->asArray()->all();
 
-$filterWalletDataByIdUser = function (array $walletsData, $idUser): array {
-    $result = [];
-
-    foreach ($walletsData as $item) {
-        if($item['id_user'] === $idUser) {
-            $result[] = $item['id'];
-        }
-    }
-
-    return $result;
-};
+$users = User::getUsersAndWallets()->all();
 
 $inProgressStatusId = TransferStatus::getIdByTitle(TransferStatus::IN_PROGRESS);
 
@@ -39,21 +26,35 @@ for ($i = 0; $i < Constants::TRANSFER_COUNT; $i++) {
     $updatedAt = $faker->dateTimeBetween($createdAt, '+30 days')
         ->format(Constants::DATE_TIME_FORMAT);
 
-    $currentWallets = $faker->randomElements($walletsData, 2, false);
     $execTime = $i > $halfTransferCount ?
         $faker->dateTimeBetween('now', '+10 days') : $faker->dateTimeBetween('-10 days', 'now');
 
-    $idSender = $faker->randomElement($userIds);
-    $idRecipient = $faker->randomElement($userIds);
+    /** @var User $sender */
+    $sender = $faker->randomElement($users);
+    /** @var User $recipient */
+    $recipient = $faker->randomElement($users);
 
-    $senderWalletsIds = $filterWalletDataByIdUser($walletsData, $idSender);
-    $recipientWalletsIds = $filterWalletDataByIdUser($walletsData, $idRecipient);
+    $senderWallets = $sender->wallets;
+    $senderWalletId = $faker->randomElement($senderWallets)->id;
+
+    if ($sender->id === $recipient->id) {
+        $senderWalletIndex = array_search(
+            $senderWalletId,
+            array_column($senderWallets, 'id'),
+            true
+        );
+        unset($senderWallets[$senderWalletIndex]);
+        $recipientWallets = $senderWallets;
+    }
+    else {
+        $recipientWallets = $recipient->wallets;
+    }
 
     $transfers[] = [
-        'id_sender' => $idSender,
-        'id_recipient' => $idRecipient,
-        'id_sender_wallet' => $faker->randomElement($senderWalletsIds),
-        'id_recipient_wallet' => $faker->randomElement($recipientWalletsIds),
+        'id_sender' => $sender->id,
+        'id_recipient' => $recipient->id,
+        'id_sender_wallet' => $senderWalletId,
+        'id_recipient_wallet' => $faker->randomElement($recipientWallets)->id,
         'amount' => $faker->randomFloat(2, 50, 100),
         'exec_time' => $execTime->format(Constants::DATE_TIME_FORMAT),
         'id_status' => $i > $halfTransferCount ? $inProgressStatusId : $faker->randomElement($statusIds),
