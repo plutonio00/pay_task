@@ -9,4 +9,5 @@ class Constants
     public const WALLET_COUNT = self::USER_COUNT * 4;
     public const TRANSFER_COUNT = self::USER_COUNT * 20;
     public const DATE_TIME_FORMAT = 'Y-m-d H:i:s';
+    public const DOUBLE_USER_COUNT = Constants::USER_COUNT * 2;
 }
