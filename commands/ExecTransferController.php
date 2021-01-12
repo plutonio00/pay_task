@@ -3,6 +3,7 @@
 namespace app\commands;
 
 use app\models\Transfer;
+use app\models\TransferStatus;
 use app\models\Wallet;
 use Throwable;
 use Yii;
@@ -19,7 +20,7 @@ class ExecTransferController extends Controller
     }
 
     protected function makeTransfers() {
-        $transfers = Transfer::getTransfersInProgress();
+        $transfers = Transfer::getTransfersInProgressForPreviousHour();
 
         foreach ($transfers as $transfer) {
             $this->makeOneTransfer($transfer);
@@ -33,14 +34,33 @@ class ExecTransferController extends Controller
                 $senderWallet = $transfer->senderWallet;
                 $recipientWallet = $transfer->recipientWallet;
 
+                Yii::error(sprintf(
+                    'transfer #%s start: amount sender: %s, recipient: %s',
+                    $transfer->id,
+                    $senderWallet->amount, $recipientWallet->amount
+                ), 'transfers');
+
                 $senderWallet->amount -= $transfer->amount;
                 $recipientWallet->amount += $transfer->amount;
 
+                Yii::error(sprintf(
+                    'transfer #%s  end: amount sender: %s, recipient: %s',
+                    $transfer->id,
+                    $senderWallet->amount, $recipientWallet->amount
+                ), 'transfers');
+
+                $transfer->id_status = TransferStatus::getIdByTitle(TransferStatus::DONE);
+
                 $senderWallet->save();
                 $recipientWallet->save();
+                $transfer->save();
             });
         } catch (Throwable $e) {
-
+            Yii::error(sprintf(
+                'Transfer #%s was failed, the reason was: %s, stacktrace: %s', $transfer->id, $e->getMessage(), $e->getTraceAsString()
+            ), 'transfers');
+            $transfer->id_status = TransferStatus::getIdByTitle(TransferStatus::ERROR);
+            $transfer->save();
         }
     }
 

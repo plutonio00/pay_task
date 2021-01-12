@@ -182,12 +182,15 @@ class Transfer extends ActiveRecord
             ->innerJoinWith($joinTables);
     }
 
-    public static function getTransfersInProgress() {
-
+    public static function getTransfersInProgressForPreviousHour() {
         return self::getTransfers(['recipientWallet', 'senderWallet'])
             ->where([
-                'id_status' => TransferStatus::getIdByTitle(TransferStatus::IN_PROGRESS),
-            ])->all();
+                'and',
+                ['id_status' => TransferStatus::getIdByTitle(TransferStatus::IN_PROGRESS)],
+                'exec_time >= DATE_SUB(CURDATE(), INTERVAL 1 HOUR)',
+                'exec_time <= NOW()'
+            ])
+            ->all();
     }
 
     /**
