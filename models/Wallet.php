@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -54,7 +55,7 @@ class Wallet extends ActiveRecord
                 'message' => Constants::INVALID_AMOUNT_MESSAGE,
             ],
             [['created_at', 'updated_at'], 'safe'],
-            [['title'], 'unique'],
+            [['title'], 'validateTitle'],
             [['title'], 'string', 'max' => 200],
             [['id_user'], 'exist', 'skipOnError' => false, 'targetClass' => User::class, 'targetAttribute' => ['id_user' => 'id']],
         ];
@@ -111,5 +112,17 @@ class Wallet extends ActiveRecord
     public function getUser(): ActiveQuery
     {
         return $this->hasOne(User::class, ['id' => 'id_user']);
+    }
+
+    public function validateTitle(string $attribute) {
+        $wallet = self::findOne([
+            'title' => $this->title,
+            'id_user' => Yii::$app->user->getId(),
+        ]);
+
+        if ($wallet) {
+            $this->addError($attribute, 'You already have wallet with such title. Choose another title');
+            return;
+        }
     }
 }

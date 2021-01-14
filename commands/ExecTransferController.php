@@ -30,20 +30,23 @@ class ExecTransferController extends Controller
     protected function makeOneTransfer(Transfer $transfer) {
 
         try {
-            Wallet::getDb()->transaction(function ($db) use ($transfer) {
+            Wallet::getDb()->transaction(function () use ($transfer) {
                 $senderWallet = $transfer->senderWallet;
                 $recipientWallet = $transfer->recipientWallet;
 
-                Yii::error(sprintf(
+                Yii::info(sprintf(
                     'transfer #%s start: amount sender: %s, recipient: %s',
                     $transfer->id,
                     $senderWallet->amount, $recipientWallet->amount
                 ), 'transfers');
 
-                $senderWallet->amount -= $transfer->amount;
-                $recipientWallet->amount += $transfer->amount;
+                $senderWallet->amount =
+                    number_format($senderWallet->amount - $transfer->amount, 2);
+                
+                $recipientWallet->amount =
+                    number_format($recipientWallet->amount + $transfer->amount, 2);
 
-                Yii::error(sprintf(
+                Yii::info(sprintf(
                     'transfer #%s  end: amount sender: %s, recipient: %s',
                     $transfer->id,
                     $senderWallet->amount, $recipientWallet->amount
@@ -61,7 +64,10 @@ class ExecTransferController extends Controller
             ), 'transfers');
             $transfer->id_status = TransferStatus::getIdByTitle(TransferStatus::ERROR);
             $transfer->save();
+            return;
         }
+
+        Yii::info(sprintf('Transfer #%s was done', $transfer->id), 'transfers');
     }
 
     protected function addTransfersStatisticInCache() {

@@ -30,8 +30,6 @@ use yii\web\IdentityInterface;
  */
 class User extends ActiveRecord implements IdentityInterface
 {
-    public $authKey;
-
     public function behaviors()
     {
         return [
@@ -170,15 +168,9 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->getPrimaryKey();
     }
 
-    public function getAuthKey(): string
-    {
-        return $this->authKey;
-    }
+    public function getAuthKey(){}
 
-    public function validateAuthKey($authKey): bool
-    {
-        return $this->authKey === $authKey;
-    }
+    public function validateAuthKey($authKey){}
 
     public function validatePassword(string $password): bool
     {

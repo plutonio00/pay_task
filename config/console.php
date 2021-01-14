@@ -31,9 +31,9 @@ $config = [
                 ],
                 [
                     'class' => 'yii\log\FileTarget',
-                    'levels' => ['error'],
+                    'levels' => ['error', 'info'],
                     'categories' => ['transfers'],
-                    'logFile' => '@app/runtime/logs/transfers_errors.log',
+                    'logFile' => '@app/runtime/logs/transfers.log',
                 ],
             ],
         ],

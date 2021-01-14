@@ -143,14 +143,15 @@ class WalletController extends Controller
         ]);
     }
 
-    public function actionReplenish() {
+    public function actionReplenish()
+    {
         Yii::$app->response->format = Response::FORMAT_JSON;
 
         $replenishForm = new ReplenishForm();
 
         if ($replenishForm->load(Yii::$app->request->post()) && $replenishForm->validate()) {
             $model = $this->findModel($replenishForm->id_wallet);
-            $model->amount += $replenishForm->amount;
+            $model->amount = number_format($model->amount + $replenishForm->amount, 2);
 
             if ($model->save()) {
                 return ['result' => 'success'];

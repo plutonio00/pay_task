@@ -83,7 +83,7 @@ class Transfer extends ActiveRecord
                 ['amount'], 'number', 'numberPattern' => Constants::AMOUNT_PATTERN,
                 'message' => Constants::INVALID_AMOUNT_MESSAGE,
             ],
-            ['amount', 'validateAmount', 'message' => '111'],
+            ['amount', 'validateAmount'],
             [['created_at', 'updated_at'], 'safe'],
             ['exec_time', 'validateExecTime'],
             [
@@ -290,7 +290,8 @@ class Transfer extends ActiveRecord
             $this->addError($attribute, sprintf(
                 'The amount of transfers that you have planned exceeds the amount on the wallet "%s".
                 Remaining balance after completing scheduled transfers: %s',
-                $senderWallet->title, $senderWallet->amount - $sumAmountTransfers
+                $senderWallet->title,
+                number_format($senderWallet->amount - $sumAmountTransfers, 2),
             ));
             return;
         }
