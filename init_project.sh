@@ -9,6 +9,12 @@ docker exec -ti pay_task_php bash
 composer install
 php yii migrate --interactive=0
 php yii fixture/load "*" --interactive=0
+
+crontab -l > mycron
+echo "0 * * * * php yii exec-transfer" >> mycron
+crontab mycron
+rm mycron
+
 exit
 
 cd ..

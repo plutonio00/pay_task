@@ -3,6 +3,7 @@
 namespace app\models;
 
 use app\exceptions\TransferStatusNotFoundException;
+use app\utils\NumberFormatUtils;
 use DateTime;
 use Exception;
 use Yii;
@@ -36,6 +37,7 @@ class Transfer extends ActiveRecord
 {
     protected const SENDER_TYPE = 'sender';
     protected const EXEC_TIME_FORMAT = 'd.m.Y H:i';
+    protected const TIMESTAMP_FORMAT = 'Y-m-d H:i:s';
     protected const WALLET_DOES_NOT_EXIST = 'Wallet with such id doesn\'t exist';
     public const FIELDS_FOR_FORM_VALIDATION = [
         'id_sender_wallet', 'id_recipient_wallet', 'amount', 'exec_time'
@@ -55,7 +57,7 @@ class Transfer extends ActiveRecord
                     ActiveRecord::EVENT_AFTER_UPDATE => 'exec_time',
                 ],
                 'value' => function ($model) {
-                    return date('Y-m-d H:i:s', strtotime($model->sender->exec_time));
+                    return date(self::TIMESTAMP_FORMAT, strtotime($model->sender->exec_time));
                 }
             ]
         ];
@@ -182,13 +184,17 @@ class Transfer extends ActiveRecord
             ->innerJoinWith($joinTables);
     }
 
-    public static function getTransfersInProgressForPreviousHour() {
+    public static function getTransfersInProgressForPreviousHour()
+    {
         return self::getTransfers(['recipientWallet', 'senderWallet'])
+//            ->where([
+//                'and',
+//                ['id_status' => TransferStatus::getIdByTitle(TransferStatus::IN_PROGRESS)],
+//                'exec_time >= DATE_SUB(CURDATE(), INTERVAL 1 HOUR)',
+//                'exec_time <= NOW()'
+//            ])
             ->where([
-                'and',
-                ['id_status' => TransferStatus::getIdByTitle(TransferStatus::IN_PROGRESS)],
-                'exec_time >= DATE_SUB(CURDATE(), INTERVAL 1 HOUR)',
-                'exec_time <= NOW()'
+                'id_status' => TransferStatus::getIdByTitle(TransferStatus::IN_PROGRESS),
             ])
             ->all();
     }
@@ -258,9 +264,9 @@ class Transfer extends ActiveRecord
 
         if ($datetime < $now) {
             $this->addError($attribute, sprintf(
-                    'You need to select a date and time later than %s',
-                    $now->format(self::EXEC_TIME_FORMAT))
-            );
+                'You need to select a date and time later than %s',
+                $now->format(self::EXEC_TIME_FORMAT)
+            ));
             return;
         }
     }
@@ -291,7 +297,7 @@ class Transfer extends ActiveRecord
                 'The amount of transfers that you have planned exceeds the amount on the wallet "%s".
                 Remaining balance after completing scheduled transfers: %s',
                 $senderWallet->title,
-                number_format($senderWallet->amount - $sumAmountTransfers, 2),
+                NumberFormatUtils::formatAmount($senderWallet->amount - $sumAmountTransfers),
             ));
             return;
         }

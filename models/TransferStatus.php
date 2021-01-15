@@ -5,6 +5,7 @@ namespace app\models;
 use app\exceptions\TransferStatusNotFoundException;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "transfer_status".
@@ -73,5 +74,30 @@ class TransferStatus extends ActiveRecord
         }
 
         return $statusId;
+    }
+
+    public static function getIdsByTitles(array $titles): array
+    {
+        $statuses = self::find()
+            ->where([
+                'in', 'title', $titles
+            ])
+            ->asArray()
+            ->all();
+
+        $titlesFromDb = array_column($statuses, 'title');
+
+        $notExistStatuses = array_diff($titles, $titlesFromDb);
+
+        if ($notExistStatuses) {
+            throw new TransferStatusNotFoundException(
+                sprintf(
+                    'Statuses \'%s\' not found in database',
+                    implode(',', $notExistStatuses)
+                )
+            );
+        }
+
+        return ArrayHelper::index($statuses, 'title');
     }
 }
