@@ -35,6 +35,12 @@ $config = [
                     'categories' => ['transfers'],
                     'logFile' => '@app/runtime/logs/transfers.log',
                 ],
+                [
+                    'class' => 'yii\log\FileTarget',
+                    'levels' => ['error'],
+                    'categories' => ['mutex'],
+                    'logFile' => '@app/runtime/logs/mutex_error.log',
+                ],
             ],
         ],
         'db' => $db,

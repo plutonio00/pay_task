@@ -12,17 +12,28 @@ use Yii;
 use yii\console\Controller;
 use yii\console\ExitCode;
 use yii\db\Transaction;
+use yii\mutex\FileMutex;
 
 class ExecTransferController extends Controller
 {
     private int $idStatusDone;
     private int $idStatusError;
+    private const MUTEX_NAME = 'exec-transfer';
 
-    public function actionIndex()
+    public function actionIndex(): int
     {
+        $mutex = new FileMutex();
+
+        if (!$mutex->acquire(self::MUTEX_NAME)) {
+            Yii::error(sprintf('%s command is already running', self::MUTEX_NAME), 'mutex');
+            return ExitCode::UNSPECIFIED_ERROR;
+        }
+
         $this->getStatuses();
         $this->makeTransfers();
         $this->addTransfersStatisticInCache();
+
+        $mutex->release(self::MUTEX_NAME);
         return ExitCode::OK;
     }
 
