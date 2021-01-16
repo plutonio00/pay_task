@@ -110,10 +110,10 @@ function handlerGridViewClick() {
                             'Transfer canceled successfully.' : 'Translation will be done at the end of this hour.';
                         let entityGridId = `#${entityName}-list-grid-view`;
                         $.pjax.reload({container: entityGridId});
-                    } else {
+                    }
+                    else {
                         message = 'Something went wrong. Please try again later.';
                     }
-
                     alert(message);
                 }
             });

@@ -96,14 +96,6 @@ class Wallet extends ActiveRecord
         return $this->hasMany(Transfer::class, ['id_recipient_wallet' => 'id']);
     }
 
-    public function getAllTransfers(): ActiveQuery
-    {
-        return $this
-            ->hasMany(Transfer::class, [])
-            ->onCondition(['id_recipient_wallet' => 'id'])
-            ->orOnCondition(['id_sender_wallet' => 'id']);
-    }
-
     /**
      * Gets query for [[User]].
      *
@@ -114,7 +106,8 @@ class Wallet extends ActiveRecord
         return $this->hasOne(User::class, ['id' => 'id_user']);
     }
 
-    public function validateTitle(string $attribute) {
+    public function validateTitle(string $attribute): void
+    {
         $wallet = self::findOne([
             'title' => $this->title,
             'id_user' => Yii::$app->user->getId(),

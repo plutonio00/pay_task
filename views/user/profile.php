@@ -25,7 +25,7 @@ $this->registerJsFile('/js/profile.js', ['depends' => JqueryAsset::class]);
             'items' => [
                 [
                     'label' => 'Wallets',
-                    'content' => $this->render('/user/_wallets', [
+                    'content' => $this->render('/wallet/_wallets', [
                         'wallet' => $wallet,
                         'user_wallets' => $model->getWallets(),
                     ]),
