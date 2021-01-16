@@ -8,11 +8,16 @@ $(function () {
         $.post({
             url: form.attr('action'),
             data: formData,
-            success: function () {
-                resetForm(form.attr('id'));
-                let entityGridId = `#${entityName}-list-grid-view`;
-                $.pjax.reload({container: entityGridId});
-                $(entityGridId).on('click', '.btn-icon', handlerGridViewClick);
+            success: function (answer) {
+                if (answer.success) {
+                    resetForm(form.attr('id'));
+                    let entityGridId = `#${entityName}-list-grid-view`;
+                    alert(`${entityName} was added successfully`);
+                    $.pjax.reload({container: entityGridId});
+                    $(entityGridId).on('click', '.btn-icon', handlerGridViewClick);
+                    return false;
+                }
+                alert('Something went wrong. Please try again later.');
                 return false;
             }
         });
@@ -92,8 +97,7 @@ function handlerGridViewClick() {
                 showModal(content);
             }
         });
-    }
-    else if ($(this).hasClass('cancel-btn') || $(this).hasClass('retry-btn')) {
+    } else if ($(this).hasClass('cancel-btn') || $(this).hasClass('retry-btn')) {
         data.changeType = $(this).hasClass('cancel-btn') ? 'cancel' : 'retry';
         let isConfirm = confirm('Are you sure?');
         entityName = 'transfer';
@@ -110,8 +114,7 @@ function handlerGridViewClick() {
                             'Transfer canceled successfully.' : 'Translation will be done at the end of this hour.';
                         let entityGridId = `#${entityName}-list-grid-view`;
                         $.pjax.reload({container: entityGridId});
-                    }
-                    else {
+                    } else {
                         message = 'Something went wrong. Please try again later.';
                     }
                     alert(message);

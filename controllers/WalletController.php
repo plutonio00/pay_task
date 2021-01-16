@@ -71,27 +71,31 @@ class WalletController extends Controller
      */
     public function actionCreate()
     {
-        Yii::$app->response->format = Response::FORMAT_JSON;
+        if (Yii::$app->request->isAjax && Yii::$app->request->isPost) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
 
-        $model = new Wallet();
+            $model = new Wallet();
 
-        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
+            if ($model->load(Yii::$app->request->post())) {
 
-            $model->id_user = Yii::$app->getUser()->id;
+                $model->id_user = Yii::$app->getUser()->id;
 
-            $errors = ActiveForm::validate($model);
+                $errors = ActiveForm::validate($model);
 
-            if ($errors) {
-                return $errors;
+                if ($errors) {
+                    return $errors;
+                }
+
+                $formWasSubmit = Yii::$app->request->post('was_submit');
+
+                if ($formWasSubmit) {
+                    return [
+                        'success' => $model->save()
+                    ];
+                }
+
+                return ['success' => true];
             }
-
-            $formWasSubmit = Yii::$app->request->post('was_submit');
-
-            if ($formWasSubmit && $model->save()) {
-                return ['result' => 'success'];
-            }
-
-            return ['result' => 'success'];
         }
 
         return $this->render('/site/error', [
@@ -115,7 +119,8 @@ class WalletController extends Controller
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
-    public function actionGetReplenishForm() {
+    public function actionGetReplenishForm()
+    {
 
         if (Yii::$app->request->isAjax && Yii::$app->request->isPost) {
             $idWallet = Yii::$app->request->post('id');
@@ -138,24 +143,30 @@ class WalletController extends Controller
             ]);
         }
 
-        return $this->render('error', [
+        return $this->render('/site/error', [
             'message' => 'Page not found',
         ]);
     }
 
     public function actionReplenish()
     {
-        Yii::$app->response->format = Response::FORMAT_JSON;
+        if (Yii::$app->request->isAjax && Yii::$app->request->isPost) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
 
-        $replenishForm = new ReplenishForm();
+            $replenishForm = new ReplenishForm();
 
-        if ($replenishForm->load(Yii::$app->request->post()) && $replenishForm->validate()) {
-            $model = $this->findModel($replenishForm->id_wallet);
-            $model->amount = number_format($model->amount + $replenishForm->amount, 2);
+            if ($replenishForm->load(Yii::$app->request->post()) && $replenishForm->validate()) {
+                $model = $this->findModel($replenishForm->id_wallet);
+                $model->amount = number_format($model->amount + $replenishForm->amount, 2);
 
-            if ($model->save()) {
-                return ['result' => 'success'];
+                return [
+                    'success' => $model->save(),
+                ];
             }
         }
+
+        return $this->render('/site/error', [
+            'message' => 'Page not found',
+        ]);
     }
 }
