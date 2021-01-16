@@ -5,6 +5,7 @@ namespace app\commands;
 use app\exceptions\TransferFailedException;
 use app\models\Transfer;
 use app\models\TransferStatus;
+use app\models\User;
 use app\models\Wallet;
 use app\utils\NumberFormatUtils;
 use Throwable;
@@ -39,7 +40,7 @@ class ExecTransferController extends Controller
 
     private function makeTransfers(): void
     {
-        $transfers = Transfer::getTransfersInProgressForPreviousHour();
+        $transfers = Transfer::getTransfersForExecute();
 
         foreach ($transfers as $transfer) {
             $this->makeOneTransfer($transfer);
@@ -98,9 +99,10 @@ class ExecTransferController extends Controller
         Yii::info(sprintf('Transfer #%s was done', $transfer->id), 'transfers');
     }
 
-    private function addTransfersStatisticInCache()
+    private function addTransfersStatisticInCache(): void
     {
-
+        $lastDoneTransfers = User::getLastDoneTransferForSender();
+        Yii::$app->cache->set('last_done_transfers', $lastDoneTransfers);
     }
 
     private function getStatuses(): void

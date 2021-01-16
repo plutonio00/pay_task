@@ -8,6 +8,7 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
+use yii\db\Query;
 use yii\helpers\ArrayHelper;
 use yii\web\IdentityInterface;
 
@@ -153,6 +154,44 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->hasMany(Transfer::class, ['id_sender' => 'id']);
     }
 
+    public static function getLastDoneTransferForSender() {
+        $query = new Query();
+        $subQuery = new Query();
+        $idStatusDone = TransferStatus::getIdByTitle(TransferStatus::DONE);
+
+        $subQuery
+            ->select('exec_time')
+            ->from(['t1' => Transfer::tableName()])
+            ->where('t1.id_sender = u.id')
+            ->andWhere(['t1.id_status' => $idStatusDone])
+            ->orderBy('exec_time DESC')
+            ->limit(1);
+
+        $select = [
+            'id_user' => 'u.id',
+            'first_name',
+            'last_name',
+            'login',
+            'email',
+            'id_transfer' => 't.id',
+            'id_sender',
+            'id_sender_wallet',
+            'id_recipient',
+            'id_recipient_wallet',
+            'amount',
+            'exec_time',
+        ];
+
+        return $query
+            ->select($select)
+            ->from(['u' => self::tableName()])
+            ->innerJoin(['t' => Transfer::tableName()], 'u.id = t.id_sender AND t.id_status = '. $idStatusDone)
+            ->where([
+                '=', 'exec_time', $subQuery
+            ])
+            ->all();
+    }
+
     public static function findIdentity($id)
     {
         return static::findOne(['id' => $id]);
@@ -168,9 +207,9 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->getPrimaryKey();
     }
 
-    public function getAuthKey(){}
+    public function getAuthKey() {}
 
-    public function validateAuthKey($authKey){}
+    public function validateAuthKey($authKey) {}
 
     public function validatePassword(string $password): bool
     {

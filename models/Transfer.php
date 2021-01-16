@@ -12,6 +12,7 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
+use yii\db\Query;
 
 /**
  * This is the model class for table "transfer".
@@ -184,17 +185,13 @@ class Transfer extends ActiveRecord
             ->innerJoinWith($joinTables);
     }
 
-    public static function getTransfersInProgressForPreviousHour()
+    public static function getTransfersForExecute()
     {
         return self::getTransfers(['recipientWallet', 'senderWallet'])
-//            ->where([
-//                'and',
-//                ['id_status' => TransferStatus::getIdByTitle(TransferStatus::IN_PROGRESS)],
-//                'exec_time >= DATE_SUB(CURDATE(), INTERVAL 1 HOUR)',
-//                'exec_time <= NOW()'
-//            ])
             ->where([
-                'id_status' => TransferStatus::getIdByTitle(TransferStatus::IN_PROGRESS),
+                'and',
+                ['id_status' => TransferStatus::getIdByTitle(TransferStatus::IN_PROGRESS)],
+                'exec_time <= NOW()'
             ])
             ->all();
     }
