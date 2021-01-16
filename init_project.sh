@@ -19,3 +19,4 @@ exit
 
 cd ..
 sudo chgrp -R www-data .
+sudo chmod 777 -R runtime

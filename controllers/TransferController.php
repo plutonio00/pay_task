@@ -141,7 +141,8 @@ class TransferController extends Controller
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
-    public function actionGetTabContent() {
+    public function actionGetTabContent(): string
+    {
 
         if (Yii::$app->request->isAjax) {
             $model = new Transfer();
@@ -183,7 +184,6 @@ class TransferController extends Controller
 
             return [
                 'success' => $model->save(),
-                'errors' => $model->errors,
             ];
         }
 
