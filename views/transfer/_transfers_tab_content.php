@@ -29,6 +29,7 @@ echo GridView::widget([
     'emptyText' => 'You haven\'t any transfers',
     'columns' => [
         ['class' => 'yii\grid\SerialColumn'],
+        'id',
         [
             'attribute' => 'id_sender_wallet',
             'value' => fn(Transfer $data) => $data->getDisplayWalletDataForOwner('sender'),
@@ -56,6 +57,7 @@ echo GridView::widget([
                             'class' => 'glyphicon glyphicon-remove-circle btn-icon cancel-btn text-danger',
                             'title' => 'Cancel the transfer',
                             'data-id' => $dataProvider['id'],
+                            'data-entity-name' => 'transfer'
                         ]);
                     }
                     return '';

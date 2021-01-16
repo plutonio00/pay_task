@@ -22,6 +22,7 @@ echo GridView::widget([
     'emptyText' => 'You haven\'t any wallets',
     'columns' => [
         ['class' => 'yii\grid\SerialColumn'],
+        'id',
         'title',
         'amount',
         'created_at',

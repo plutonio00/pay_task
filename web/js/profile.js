@@ -19,7 +19,7 @@ $(function () {
         return false;
     });
 
-    $('.entity-grid-view').on('click', '.btn-icon', handlerGridViewClick);
+    $('#profile-tab-wrapper').on('click', '.btn-icon', handlerGridViewClick);
 
     $('#transfers-tab-header').on('click', function () {
         let $transfersTabContent = $('#transfers-tab-content');
@@ -71,27 +71,52 @@ function showModal(content) {
     modalWindow.modal('show');
 }
 
-
-
 function handlerGridViewClick() {
     let idEntity = $(this).data('id');
     let action;
     let entityName;
 
-    if ($(this).hasClass('replenish-btn')) {
-        action = 'replenish';
-        entityName = 'wallet';
-    }
-
     let data = {
         id: idEntity,
     };
 
-    $.post({
-        url: `/${entityName}/get-${action}-form`,
-        data: data,
-        success: function (content) {
-            showModal(content);
+    if ($(this).hasClass('replenish-btn')) {
+        action = 'replenish';
+        entityName = 'wallet';
+
+
+        $.post({
+            url: `/${entityName}/get-${action}-form`,
+            data: data,
+            success: function (content) {
+                showModal(content);
+            }
+        });
+    }
+    else if ($(this).hasClass('cancel-btn') || $(this).hasClass('retry-btn')) {
+        data.changeType = $(this).hasClass('cancel-btn') ? 'cancel' : 'retry';
+        let isConfirm = confirm('Are you sure?');
+        entityName = 'transfer';
+
+        if (isConfirm) {
+            $.post({
+                url: `/${entityName}/change-status`,
+                data: data,
+                success: function (result) {
+                    let message;
+
+                    if (result.success) {
+                        message = data.changeType === 'cancel' ?
+                            'Transfer canceled successfully.' : 'Translation will be done at the end of this hour.';
+                        let entityGridId = `#${entityName}-list-grid-view`;
+                        $.pjax.reload({container: entityGridId});
+                    } else {
+                        message = 'Something went wrong. Please try again later.';
+                    }
+
+                    alert(message);
+                }
+            });
         }
-    });
+    }
 }

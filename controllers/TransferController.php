@@ -6,6 +6,7 @@ use app\models\TransferStatus;
 use app\models\User;
 use app\models\Wallet;
 use app\utils\ArrayUtils;
+use DateTime;
 use Yii;
 use app\models\Transfer;
 use yii\web\Controller;
@@ -153,6 +154,37 @@ class TransferController extends Controller
                 'transfers' => Transfer::getTransfersForUser($idUser),
                 'user' => User::findOne(['id' => $idUser]),
             ]);
+        }
+
+        return $this->render('/site/error', [
+            'message' => 'Page not found',
+        ]);
+    }
+
+    public function actionChangeStatus() {
+
+        if (Yii::$app->request->isAjax) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+
+            $model = $this->findModel(Yii::$app->request->post('id'));
+            $changeType = Yii::$app->request->post('changeType');
+
+            if ($changeType === 'cancel') {
+                $idStatus = TransferStatus::getIdByTitle(TransferStatus::CANCELLED);
+            }
+            else {
+                $idStatus = TransferStatus::getIdByTitle(TransferStatus::IN_PROGRESS);
+                $execTime = new DateTime();
+                $execTime->modify('+1 hour');
+                $model->exec_time = $execTime->format(Transfer::TIMESTAMP_FORMAT);
+            }
+
+            $model->id_status = $idStatus;
+
+            return [
+                'success' => $model->save(),
+                'errors' => $model->errors,
+            ];
         }
 
         return $this->render('/site/error', [

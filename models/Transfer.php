@@ -37,8 +37,8 @@ use yii\db\Query;
 class Transfer extends ActiveRecord
 {
     protected const SENDER_TYPE = 'sender';
-    protected const EXEC_TIME_FORMAT = 'd.m.Y H:i';
-    protected const TIMESTAMP_FORMAT = 'Y-m-d H:i:s';
+    public const EXEC_TIME_FORMAT = 'd.m.Y H:00';
+    public const TIMESTAMP_FORMAT = 'Y-m-d H:00:00';
     protected const WALLET_DOES_NOT_EXIST = 'Wallet with such id doesn\'t exist';
     public const FIELDS_FOR_FORM_VALIDATION = [
         'id_sender_wallet', 'id_recipient_wallet', 'amount', 'exec_time'
@@ -246,6 +246,10 @@ class Transfer extends ActiveRecord
     public function validateExecTime(string $attribute): void
     {
         try {
+            if (DateTime::createFromFormat(self::TIMESTAMP_FORMAT, $this->exec_time)) {
+                return;
+            }
+
             $datetime = DateTime::createFromFormat(self::EXEC_TIME_FORMAT, $this->exec_time);
         } catch (Exception $e) {
             $this->addError($attribute, 'Unexpected problem! Try again.');
@@ -270,7 +274,6 @@ class Transfer extends ActiveRecord
 
     public function validateAmount(string $attribute): void
     {
-
         $idStatusInProgress = TransferStatus::getIdByTitle(TransferStatus::IN_PROGRESS);
         $sumAmountTransfers = self::find()
             ->where([

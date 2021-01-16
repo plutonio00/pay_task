@@ -20,6 +20,7 @@ class TransferStatus extends ActiveRecord
     public const IN_PROGRESS = 'in progress';
     public const DONE = 'done';
     public const ERROR = 'error';
+    public const CANCELLED = 'cancelled';
 
     /**
      * {@inheritdoc}
