@@ -3,6 +3,7 @@
 namespace app\commands;
 
 use app\exceptions\TransferFailedException;
+use app\models\Constants;
 use app\models\Transfer;
 use app\models\TransferStatus;
 use app\models\User;
@@ -102,7 +103,7 @@ class ExecTransferController extends Controller
     private function addTransfersStatisticInCache(): void
     {
         $lastDoneTransfers = User::getLastDoneTransferForSender();
-        Yii::$app->cache->set('last_done_transfers', $lastDoneTransfers);
+        Yii::$app->cache->set(Constants::CACHE_KEY_TRANSFER_DONE_STATISTIC, $lastDoneTransfers);
     }
 
     private function getStatuses(): void
