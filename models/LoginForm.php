@@ -64,7 +64,7 @@ class LoginForm extends Model
     /**
      * Finds user by [[username]]
      *
-     * @return User|null
+     * @return User|array|\yii\db\ActiveRecord|null
      */
     public function getUser()
     {

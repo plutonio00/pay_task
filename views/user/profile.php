@@ -19,8 +19,6 @@ $this->registerJsFile('/js/profile.js', ['depends' => JqueryAsset::class]);
 <div class="user-view">
     <h1><?= $model->getFullName() ?></h1>
 
-    <?= Html::a('Log out', '/site/logout', ['class' => 'profile-link']) ?>
-
     <div id="profile-tab-wrapper" class="mt">
 
         <?php echo Tabs::widget([

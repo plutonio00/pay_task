@@ -1,9 +1,11 @@
 <?php
 
 /* @var $this \yii\web\View */
+
 /* @var $content string */
 
 use app\widgets\Alert;
+use yii\bootstrap\Nav;
 use yii\helpers\Html;
 use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
@@ -34,6 +36,38 @@ AppAsset::register($this);
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
+    try {
+        echo Nav::widget([
+            'options' => ['class' => 'navbar-nav navbar-right'],
+            'items' => [
+                [
+                    'label' => 'Account',
+                    'url' => '/user/' . Yii::$app->user->identity->login,
+                    'visible' => !Yii::$app->user->isGuest
+                ],
+                ['label' => 'Admin module',
+                    'items' => [
+                        ['label' => 'Transfers statistic',
+                            'url' => ['/admin/transfer/statistic']
+                        ]
+                    ],
+                ],
+                Yii::$app->user->isGuest ? (
+                ['label' => 'Login', 'url' => ['/site/login']]
+                ) : (
+                    '<li>'
+                    . Html::beginForm(['/site/logout'], 'post')
+                    . Html::submitButton(
+                        'Logout (' . Yii::$app->user->identity->login . ')',
+                        ['class' => 'btn btn-link logout']
+                    )
+                    . Html::endForm()
+                    . '</li>'
+                )
+            ],
+        ]);
+    } catch (Exception $e) {
+    }
     NavBar::end();
     ?>
 

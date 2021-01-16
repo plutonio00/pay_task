@@ -21,7 +21,7 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['logout'],
+                'only' => ['logout', 'login', 'signup'],
                 'rules' => [
                     [
                         'actions' => ['logout'],
@@ -38,7 +38,7 @@ class SiteController extends Controller
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
-                    'logout' => ['get'],
+                    'logout' => ['post'],
                 ],
             ],
         ];
@@ -71,10 +71,7 @@ class SiteController extends Controller
         {
             return $this->redirect('/site/login');
         }
-
-        /** @var User $user */
-        $user = User::findIdentity(Yii::$app->user->getId());
-        return $this->redirect('/user/' . $user->login);
+        return $this->redirect('/user/' . Yii::$app->user->identity->login);
     }
 
     /**
@@ -84,6 +81,10 @@ class SiteController extends Controller
      */
     public function actionLogin()
     {
+        if (!Yii::$app->user->isGuest) {
+            return $this->redirect('/user/' . Yii::$app->user->identity->login);
+        }
+
         $model = new LoginForm();
 
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
@@ -104,11 +105,15 @@ class SiteController extends Controller
     {
         Yii::$app->user->logout();
 
-        return $this->goHome();
+        return $this->redirect('/site/login');
     }
 
     public function actionSignup()
     {
+        if (!Yii::$app->user->isGuest) {
+            return $this->redirect('/user/' . Yii::$app->user->identity->login);
+        }
+
         $model = new SignupForm();
 
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
