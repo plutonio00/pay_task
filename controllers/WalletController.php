@@ -32,39 +32,9 @@ class WalletController extends Controller
         return [
             'verbs' => [
                 'class' => VerbFilter::class,
-                'actions' => [
-
-                ],
+                'actions' => [],
             ],
         ];
-    }
-
-    /**
-     * Lists all Wallet models.
-     * @return mixed
-     */
-    public function actionIndex()
-    {
-        $dataProvider = new ActiveDataProvider([
-            'query' => Wallet::find(),
-        ]);
-
-        return $this->render('index', [
-            'dataProvider' => $dataProvider,
-        ]);
-    }
-
-    /**
-     * Displays a single Wallet model.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionView($id)
-    {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
     }
 
     /**
@@ -113,7 +83,7 @@ class WalletController extends Controller
      * @return Wallet the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
+    protected function findModel(int $id): Wallet
     {
         if (($model = Wallet::findOne($id)) !== null) {
             return $model;
@@ -126,7 +96,7 @@ class WalletController extends Controller
      * @return string
      * @throws NotFoundHttpException
      */
-    public function actionGetReplenishForm()
+    public function actionGetReplenishForm(): string
     {
 
         if (Yii::$app->request->isAjax && Yii::$app->request->isPost) {

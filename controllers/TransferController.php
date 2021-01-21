@@ -32,9 +32,7 @@ class TransferController extends Controller
         return [
             'verbs' => [
                 'class' => VerbFilter::class,
-                'actions' => [
-                    'delete' => ['POST'],
-                ],
+                'actions' => [],
             ],
         ];
     }
@@ -106,49 +104,13 @@ class TransferController extends Controller
     }
 
     /**
-     * Updates an existing Transfer model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
-
-        return $this->render('update', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Deletes an existing Transfer model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     * @throws Throwable
-     * @throws StaleObjectException
-     */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
-    }
-
-    /**
      * Finds the Transfer model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
      * @return Transfer the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
+    protected function findModel(int $id): Transfer
     {
         if (($model = Transfer::findOne($id)) !== null) {
             return $model;
@@ -157,6 +119,10 @@ class TransferController extends Controller
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
+    /**
+     * @return string
+     * @throws TransferStatusNotFoundException
+     */
     public function actionGetTabContent(): string
     {
 
@@ -178,6 +144,12 @@ class TransferController extends Controller
         ]);
     }
 
+    /**
+     * @return array|string
+     * @throws NotFoundHttpException
+     * @throws TransferStatusNotFoundException
+     * @throws JsonException
+     */
     public function actionChangeStatus() {
 
         if (Yii::$app->request->isAjax) {
@@ -198,8 +170,17 @@ class TransferController extends Controller
 
             $model->id_status = $idStatus;
 
+            $saveResult = $model->save();
+            if (!$saveResult) {
+                Yii::error(sprintf(
+                    Constants::SAVE_MODEL_ERROR,
+                    Transfer::tableName(),
+                    json_encode($model->errors, JSON_THROW_ON_ERROR)
+                ));
+            }
+
             return [
-                'success' => $model->save(),
+                'success' => $saveResult,
             ];
         }
 
