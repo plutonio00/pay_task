@@ -2,13 +2,18 @@
 
 namespace app\controllers;
 
+use app\exceptions\TransferStatusNotFoundException;
+use app\models\Constants;
 use app\models\TransferStatus;
 use app\models\User;
 use app\models\Wallet;
 use app\utils\ArrayUtils;
 use DateTime;
+use JsonException;
+use Throwable;
 use Yii;
 use app\models\Transfer;
+use yii\db\StaleObjectException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -38,6 +43,8 @@ class TransferController extends Controller
      * Creates a new Transfer model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
+     * @throws JsonException
+     * @throws TransferStatusNotFoundException
      */
     public function actionCreate()
     {
@@ -76,9 +83,18 @@ class TransferController extends Controller
 
                 $model->id_recipient = $recipientWallet->id_user;
 
-                if ($model->save()) {
-                    return ['result' => 'success'];
+                $saveResult = $model->save();
+                if (!$saveResult) {
+                    Yii::error(sprintf(
+                        Constants::SAVE_MODEL_ERROR,
+                        Transfer::tableName(),
+                        json_encode($model->errors, JSON_THROW_ON_ERROR)
+                    ));
                 }
+
+                return [
+                    'success' => $saveResult,
+                ];
             }
 
             return ['result' => 'success'];
@@ -115,8 +131,8 @@ class TransferController extends Controller
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
-     * @throws \Throwable
-     * @throws \yii\db\StaleObjectException
+     * @throws Throwable
+     * @throws StaleObjectException
      */
     public function actionDelete($id)
     {

@@ -46,12 +46,17 @@ $(function () {
         $.post({
             url: form.attr('action'),
             data: form.serializeArray(),
-            success: function () {
-                $('#entity-actions-modal').modal('hide');
-                resetForm(form.attr('id'));
-                let entityGridId = `#${entityName}-list-grid-view`;
-                $.pjax.reload({container: entityGridId});
-                $(entityGridId).on('click', '.btn-icon', handlerGridViewClick);
+            success: function (answer) {
+                if (answer.success) {
+                    $('#entity-actions-modal').modal('hide');
+                    resetForm(form.attr('id'));
+                    alert('Balance was replenished successfully');
+                    let entityGridId = `#${entityName}-list-grid-view`;
+                    $.pjax.reload({container: entityGridId});
+                    $(entityGridId).on('click', '.btn-icon', handlerGridViewClick);
+                    return false;
+                }
+                alert('Something went wrong. Please try again later.');
                 return false;
             }
         });

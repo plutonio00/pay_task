@@ -3,6 +3,7 @@
 namespace app\models;
 
 use app\exceptions\TransferStatusNotFoundException;
+use app\traits\ValidateTrait;
 use app\utils\NumberFormatUtils;
 use DateTime;
 use Exception;
@@ -12,7 +13,6 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
-use yii\db\Query;
 
 /**
  * This is the model class for table "transfer".
@@ -36,7 +36,10 @@ use yii\db\Query;
  */
 class Transfer extends ActiveRecord
 {
+    use ValidateTrait;
+
     protected const SENDER_TYPE = 'sender';
+    protected const RECIPIENT_TYPE = 'recipient';
     public const EXEC_TIME_FORMAT = 'd.m.Y H:00';
     public const TIMESTAMP_FORMAT = 'Y-m-d H:00:00';
     protected const WALLET_DOES_NOT_EXIST = 'Wallet with such id doesn\'t exist';
@@ -86,15 +89,12 @@ class Transfer extends ActiveRecord
                 ['amount'], 'number', 'numberPattern' => Constants::AMOUNT_PATTERN,
                 'message' => Constants::INVALID_AMOUNT_MESSAGE,
             ],
-            ['amount', 'validateAmount'],
             [['created_at', 'updated_at'], 'safe'],
-            ['exec_time', 'validateExecTime'],
             [
                 ['id_sender_wallet'], 'exist', 'skipOnError' => false,
                 'targetClass' => Wallet::class, 'targetAttribute' => ['id_sender_wallet' => 'id'],
                 'message' => self::WALLET_DOES_NOT_EXIST,
             ],
-            [['id_sender_wallet'], 'validateWallet', 'params' => ['type' => self::SENDER_TYPE]],
             [
                 ['id_recipient_wallet'], 'exist', 'skipOnError' => false,
                 'targetClass' => Wallet::class,
@@ -105,7 +105,9 @@ class Transfer extends ActiveRecord
                 'operator' => '!==',
                 'message' => 'You must choose different wallets!'
             ],
-            [['id_recipient_wallet'], 'validateWallet', 'params' => ['type' => 'recipient']],
+            [['amount', 'exec_time'], 'validateField'],
+            [['id_sender_wallet'], 'validateField', 'params' => ['method' => 'validateWallet', 'args' => ['type' => self::RECIPIENT_TYPE]]],
+            [['id_recipient_wallet'], 'validateField', 'params' => ['method' => 'validateWallet', 'args' => ['type' => self::RECIPIENT_TYPE]]],
             [['id_status'], 'exist', 'skipOnError' => true, 'targetClass' => TransferStatus::class, 'targetAttribute' => ['id_status' => 'id']],
         ];
     }

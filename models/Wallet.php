@@ -7,6 +7,7 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
+use app\traits\ValidateTrait;
 
 /**
  * This is the model class for table "wallet".
@@ -24,6 +25,8 @@ use yii\db\Expression;
  */
 class Wallet extends ActiveRecord
 {
+    use ValidateTrait;
+
     public function behaviors()
     {
         return [
@@ -55,8 +58,8 @@ class Wallet extends ActiveRecord
                 'message' => Constants::INVALID_AMOUNT_MESSAGE,
             ],
             [['created_at', 'updated_at'], 'safe'],
-            [['title'], 'validateTitle'],
             [['title'], 'string', 'max' => 200],
+            [['title'], 'validateField'],
             [['id_user'], 'exist', 'skipOnError' => false, 'targetClass' => User::class, 'targetAttribute' => ['id_user' => 'id']],
         ];
     }

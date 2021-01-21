@@ -2,7 +2,10 @@
 
 namespace app\controllers;
 
+use app\models\Constants;
 use app\models\ReplenishForm;
+use app\utils\NumberFormatUtils;
+use JsonException;
 use Yii;
 use app\models\Wallet;
 use yii\bootstrap\ActiveForm;
@@ -119,6 +122,10 @@ class WalletController extends Controller
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
+    /**
+     * @return string
+     * @throws NotFoundHttpException
+     */
     public function actionGetReplenishForm()
     {
 
@@ -148,6 +155,11 @@ class WalletController extends Controller
         ]);
     }
 
+    /**
+     * @return array|string
+     * @throws NotFoundHttpException
+     * @throws JsonException
+     */
     public function actionReplenish()
     {
         if (Yii::$app->request->isAjax && Yii::$app->request->isPost) {
@@ -157,10 +169,20 @@ class WalletController extends Controller
 
             if ($replenishForm->load(Yii::$app->request->post()) && $replenishForm->validate()) {
                 $model = $this->findModel($replenishForm->id_wallet);
-                $model->amount = number_format($model->amount + $replenishForm->amount, 2);
+                $model->amount =
+                    NumberFormatUtils::formatAmount($model->amount + $replenishForm->amount);
+
+                $saveResult = $model->save();
+                if (!$saveResult) {
+                    Yii::error(sprintf(
+                        Constants::SAVE_MODEL_ERROR,
+                        Wallet::tableName(),
+                        json_encode($model->errors, JSON_THROW_ON_ERROR)
+                    ));
+                }
 
                 return [
-                    'success' => $model->save(),
+                    'success' => $saveResult,
                 ];
             }
         }
