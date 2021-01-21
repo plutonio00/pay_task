@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\search\WalletSearch;
 use app\models\Wallet;
 use Yii;
 use app\models\User;
@@ -76,6 +77,7 @@ class UserController extends Controller
         return $this->render('profile', [
             'model' => $model,
             'wallet' => new Wallet(),
+            'wallet_search' => new WalletSearch(),
         ]);
     }
 }

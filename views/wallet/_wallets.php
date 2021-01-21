@@ -1,5 +1,7 @@
 <?php
 
+use yii\grid\SerialColumn;
+use app\models\search\WalletSearch;
 use app\models\Wallet;
 use yii\data\ActiveDataProvider;
 use yii\grid\GridView;
@@ -8,6 +10,7 @@ use yii\widgets\Pjax;
 
 /* @var ActiveDataProvider $user_wallets */
 /* @var Wallet $wallet */
+/* @var WalletSearch $wallet_search */
 
 echo $this->render('/wallet/_create_form', ['model' => $wallet]);
 
@@ -19,9 +22,10 @@ echo GridView::widget([
     'dataProvider' => new ActiveDataProvider([
         'query' => $user_wallets
     ]),
+    'filterModel' => $wallet_search,
     'emptyText' => 'You haven\'t any wallets',
     'columns' => [
-        ['class' => 'yii\grid\SerialColumn'],
+        ['class' => SerialColumn::class],
         'id',
         'title',
         'amount',

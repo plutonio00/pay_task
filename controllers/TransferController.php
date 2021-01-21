@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\exceptions\TransferStatusNotFoundException;
 use app\models\Constants;
+use app\models\search\TransferSearch;
 use app\models\TransferStatus;
 use app\models\User;
 use app\models\Wallet;
@@ -134,6 +135,7 @@ class TransferController extends Controller
 
             return $this->renderAjax('_transfers_tab_content', [
                 'model' => $model,
+                'transfer_search' => new TransferSearch(),
                 'transfers' => Transfer::getTransfersForUser($idUser),
                 'user' => User::findOne(['id' => $idUser]),
             ]);

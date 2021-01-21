@@ -29,7 +29,7 @@ $(function () {
     $('#transfers-tab-header').on('click', function () {
         let $transfersTabContent = $('#transfers-tab-content');
 
-        if ($transfersTabContent.empty()) {
+        if ($transfersTabContent.is(':empty')) {
             $.post({
                 url: '/transfer/get-tab-content',
                 success: function (html) {

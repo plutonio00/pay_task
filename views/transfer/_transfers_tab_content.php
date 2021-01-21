@@ -1,5 +1,8 @@
 <?php
 
+use app\models\search\TransferSearch;
+use yii\grid\ActionColumn;
+use yii\grid\SerialColumn;
 use app\models\Transfer;
 use app\models\TransferStatus;
 use app\models\User;
@@ -12,6 +15,7 @@ use yii\widgets\Pjax;
 /* @var User $user */
 /* @var Transfer $model */
 /* @var ActiveQuery $transfers */
+/* @var TransferSearch $transfer_search */
 
 echo $this->render('/transfer/_create_form', [
     'model' => $model,
@@ -26,9 +30,10 @@ echo GridView::widget([
     'dataProvider' => new ActiveDataProvider([
         'query' => $transfers,
     ]),
+    'filterModel' => $transfer_search,
     'emptyText' => 'You haven\'t any transfers',
     'columns' => [
-        ['class' => 'yii\grid\SerialColumn'],
+        ['class' => SerialColumn::class],
         'id',
         [
             'attribute' => 'id_sender_wallet',
@@ -47,7 +52,7 @@ echo GridView::widget([
         'created_at',
         'updated_at',
         [
-            'class' => 'yii\grid\ActionColumn',
+            'class' => ActionColumn::class,
             'header' => 'Actions',
             'template' => '{retry}{cancel}',
             'buttons' => [
