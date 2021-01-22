@@ -1,4 +1,5 @@
-<?php use app\models\search\WalletSearch;
+<?php
+
 use yii\web\JqueryAsset;
 
 /* @var $this yii\web\View */
@@ -6,7 +7,6 @@ use yii\web\JqueryAsset;
 /* @var app\models\User $model */
 /* @var ArrayDataProvider $dataProvider */
 /* @var Wallet $wallet */
-/* @var WalletSearch $wallet_search */
 
 use app\models\Wallet;
 use yii\bootstrap\Modal;
@@ -29,8 +29,7 @@ $this->registerJsFile('/js/profile.js', ['depends' => JqueryAsset::class]);
                     'label' => 'Wallets',
                     'content' => $this->render('/wallet/_wallets', [
                         'wallet' => $wallet,
-                        'user_wallets' => $model->getWallets(),
-                        'wallet_search' => $wallet_search,
+                        'userWallets' => $model->getWallets(),
                     ]),
                     'active' => true,
                     'options' => [

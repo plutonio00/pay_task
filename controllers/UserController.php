@@ -2,7 +2,6 @@
 
 namespace app\controllers;
 
-use app\models\search\WalletSearch;
 use app\models\Wallet;
 use Yii;
 use app\models\User;
@@ -66,6 +65,7 @@ class UserController extends Controller
 
     public function actionProfile($login): string
     {
+        /** @var User $model */
         $model = User::getAccountInfo($login);
 
         if(!$model) {
@@ -74,10 +74,15 @@ class UserController extends Controller
             ]);
         }
 
+        if ($model->id !== Yii::$app->user->getId()) {
+            return $this->render('/site/error', [
+                'message' => 'Not allowed. You haven\'t access to this page',
+            ]);
+        }
+
         return $this->render('profile', [
             'model' => $model,
             'wallet' => new Wallet(),
-            'wallet_search' => new WalletSearch(),
         ]);
     }
 }
