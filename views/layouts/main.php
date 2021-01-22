@@ -45,13 +45,15 @@ AppAsset::register($this);
                     'url' => '/user/' . Yii::$app->user->identity->login,
                     'visible' => !Yii::$app->user->isGuest
                 ],
+                Yii::$app->user->can('admin') ? (
                 ['label' => 'Admin module',
                     'items' => [
                         ['label' => 'Transfers statistic',
                             'url' => ['/admin/transfer/statistic']
                         ]
                     ],
-                ],
+                ]
+                ) : '',
                 Yii::$app->user->isGuest ? (
                 ['label' => 'Login', 'url' => ['/site/login']]
                 ) : (
