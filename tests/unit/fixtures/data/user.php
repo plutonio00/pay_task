@@ -14,7 +14,7 @@ for($i = 0; $i < Constants::USER_COUNT; $i++) {
 
     $firstName = $faker->unique()->firstName;
 
-    $users['user' . $i] = [
+    $users[] = [
         'first_name' => $firstName,
         'last_name' => $faker->lastName,
         'is_male' => $faker->numberBetween(0, 1),

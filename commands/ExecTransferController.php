@@ -2,7 +2,6 @@
 
 namespace app\commands;
 
-use app\exceptions\TransferFailedException;
 use app\models\Constants;
 use app\models\Transfer;
 use app\models\TransferStatus;
@@ -72,7 +71,7 @@ class ExecTransferController extends Controller
              * I disabled validation when saving a translation,
              * because all of its fields must have been validated earlier
             */
-            if (!$senderWallet->save() || !$recipientWallet->save() || !$transfer->save(false)) {
+            if (!$senderWallet->save() || !$recipientWallet->save() || !$transfer->save()) {
                 Yii::error(
                     sprintf(
                         'Transfer #%s failed - error while saving entities to database: senderWallet errors - %s, recipientWallet errors - %s, transfer errors - %s',

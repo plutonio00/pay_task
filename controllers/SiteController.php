@@ -6,6 +6,7 @@ use app\models\LoginForm;
 use app\models\SignupForm;
 use app\models\User;
 use Yii;
+use yii\base\Exception;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
@@ -101,13 +102,17 @@ class SiteController extends Controller
      *
      * @return Response
      */
-    public function actionLogout()
+    public function actionLogout(): Response
     {
         Yii::$app->user->logout();
 
         return $this->redirect('/site/login');
     }
 
+    /**
+     * @return string|Response
+     * @throws Exception
+     */
     public function actionSignup()
     {
         if (!Yii::$app->user->isGuest) {
@@ -127,8 +132,11 @@ class SiteController extends Controller
             $user->password = Yii::$app->getSecurity()->generatePasswordHash($model->password);
 
             if ($user->save()) {
-                Yii::$app->user->login($user, 0);
+                $auth = Yii::$app->authManager;
+                $role = $auth->getRole('user');
+                $auth->assign($role, $user->id);
 
+                Yii::$app->user->login($user, 0);
                 return $this->redirect('/user/' . $user->login);
             }
         }
