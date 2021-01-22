@@ -15,7 +15,6 @@ use yii\widgets\Pjax;
 /* @var User $user */
 /* @var Transfer $model */
 /* @var ActiveQuery $transfers */
-/* @var TransferSearch $transfer_search */
 
 echo $this->render('/transfer/_create_form', [
     'model' => $model,
@@ -30,7 +29,6 @@ echo GridView::widget([
     'dataProvider' => new ActiveDataProvider([
         'query' => $transfers,
     ]),
-    'filterModel' => $transfer_search,
     'emptyText' => 'You haven\'t any transfers',
     'columns' => [
         ['class' => SerialColumn::class],

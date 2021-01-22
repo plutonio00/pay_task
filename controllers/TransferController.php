@@ -135,7 +135,6 @@ class TransferController extends Controller
 
             return $this->renderAjax('_transfers_tab_content', [
                 'model' => $model,
-                'transfer_search' => new TransferSearch(),
                 'transfers' => Transfer::getTransfersForUser($idUser),
                 'user' => User::findOne(['id' => $idUser]),
             ]);
