@@ -130,8 +130,8 @@ function handlerGridViewClick() {
                     if (result.success) {
                         message = data.changeType === 'cancel' ?
                             'Transfer canceled successfully.' : 'Translation will be done at the end of this hour.';
-                        let entityGridId = `#${entityName}-list-grid-view`;
-                        $.pjax.reload({container: entityGridId});
+                        let pjaxId = `#${entityName}-pjax-grid-view`;
+                        $.pjax.reload({container: pjaxId});
                     } else {
                         message = 'Something went wrong. Please try again later.';
                     }
