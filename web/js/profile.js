@@ -15,16 +15,14 @@ $(function () {
                     let $gridView = $(`#${entityName}-grid-view`);
                     let pageCount = $gridView.data('pageCount');
 
-                    console.log($gridView.data('paginationLinkLast'));
-                    console.log($gridView.data('pageCount'));
                     alert(`${entityName} was added successfully`);
 
                     if (pageCount === 1) {
-                        $.pjax.reload({container: pjaxId});
+                        $.pjax.reload({container: pjaxId, replace: false});
                     }
                     else {
                         let paginationLinkLast = $gridView.data('paginationLinkLast');
-                        $.pjax.reload({container: pjaxId, url: paginationLinkLast});
+                        $.pjax.reload({container: pjaxId, url: paginationLinkLast, replace: false});
                     }
 
                     $($gridView).on('click', '.btn-icon', handlerGridViewClick);
@@ -65,7 +63,7 @@ $(function () {
                     resetForm(form.attr('id'));
                     alert('Balance was replenished successfully');
                     let pjaxId = `#${entityName}-pjax-grid-view`;
-                    $.pjax.reload({container: pjaxId});
+                    $.pjax.reload({container: pjaxId, replace: false});
                     $(pjaxId).on('click', '.btn-icon', handlerGridViewClick);
                     return false;
                 }
@@ -131,7 +129,7 @@ function handlerGridViewClick() {
                         message = data.changeType === 'cancel' ?
                             'Transfer canceled successfully.' : 'Translation will be done at the end of this hour.';
                         let pjaxId = `#${entityName}-pjax-grid-view`;
-                        $.pjax.reload({container: pjaxId});
+                        $.pjax.reload({container: pjaxId, replace: false});
                     } else {
                         message = 'Something went wrong. Please try again later.';
                     }
