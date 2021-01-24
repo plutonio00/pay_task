@@ -106,7 +106,7 @@ class Transfer extends ActiveRecord
                 'message' => 'You must choose different wallets!'
             ],
             [['amount', 'exec_time'], 'validateField'],
-            [['id_sender_wallet'], 'validateField', 'params' => ['method' => 'validateWallet', 'args' => ['type' => self::RECIPIENT_TYPE]]],
+            [['id_sender_wallet'], 'validateField', 'params' => ['method' => 'validateWallet', 'args' => ['type' => self::SENDER_TYPE]]],
             [['id_recipient_wallet'], 'validateField', 'params' => ['method' => 'validateWallet', 'args' => ['type' => self::RECIPIENT_TYPE]]],
             [['id_status'], 'exist', 'skipOnError' => true, 'targetClass' => TransferStatus::class, 'targetAttribute' => ['id_status' => 'id']],
         ];
