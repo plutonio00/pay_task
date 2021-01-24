@@ -12,7 +12,8 @@ use yii\widgets\Pjax;
 /* @var ActiveDataProvider $dataProvider */
 
 Pjax::begin([
-    'id' => 'transfer-pjax-grid-view'
+    'id' => 'transfer-pjax-grid-view',
+    'enablePushState' => false,
 ]);
 
 echo GridView::widget([

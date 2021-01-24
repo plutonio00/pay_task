@@ -15,6 +15,7 @@ echo $this->render('/wallet/_create_form', ['model' => $wallet]);
 
 Pjax::begin([
     'id' => 'wallet-pjax-grid-view',
+    'enablePushState' => false,
 ]);
 
 echo GridView::widget([
