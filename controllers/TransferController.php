@@ -14,6 +14,7 @@ use JsonException;
 use Throwable;
 use Yii;
 use app\models\Transfer;
+use yii\data\ActiveDataProvider;
 use yii\db\StaleObjectException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -124,19 +125,19 @@ class TransferController extends Controller
      * @return string
      * @throws TransferStatusNotFoundException
      */
-    public function actionGetTabContent(): string
+    public function actionGetUserTransfers(): string
     {
-
         if (Yii::$app->request->isAjax) {
-            $model = new Transfer();
             $this->layout = false;
-            $idUser = Yii::$app->user->getId();
 
+            $dataProvider = new ActiveDataProvider([
+               'query' =>  Transfer::getTransfersForUser(Yii::$app->user->getId()),
+            ]);
 
-            return $this->renderAjax('_transfers_tab_content', [
-                'model' => $model,
-                'transfers' => Transfer::getTransfersForUser($idUser),
-                'user' => User::findOne(['id' => $idUser]),
+            $dataProvider->prepare();
+
+            return $this->renderAjax('_transfers_list', [
+                'dataProvider' => $dataProvider,
             ]);
         }
 

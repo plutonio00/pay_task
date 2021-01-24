@@ -11,10 +11,23 @@ $(function () {
             success: function (answer) {
                 if (answer.success) {
                     resetForm(form.attr('id'));
-                    let entityGridId = `#${entityName}-list-grid-view`;
+                    let pjaxId = `#${entityName}-pjax-grid-view`;
+                    let $gridView = $(`#${entityName}-grid-view`);
+                    let pageCount = $gridView.data('pageCount');
+
+                    console.log($gridView.data('paginationLinkLast'));
+                    console.log($gridView.data('pageCount'));
                     alert(`${entityName} was added successfully`);
-                    $.pjax.reload({container: entityGridId});
-                    $(entityGridId).on('click', '.btn-icon', handlerGridViewClick);
+
+                    if (pageCount === 1) {
+                        $.pjax.reload({container: pjaxId});
+                    }
+                    else {
+                        let paginationLinkLast = $gridView.data('paginationLinkLast');
+                        $.pjax.reload({container: pjaxId, url: paginationLinkLast});
+                    }
+
+                    $($gridView).on('click', '.btn-icon', handlerGridViewClick);
                     return false;
                 }
                 alert('Something went wrong. Please try again later.');
@@ -27,13 +40,13 @@ $(function () {
     $('#profile-tab-wrapper').on('click', '.btn-icon', handlerGridViewClick);
 
     $('#transfers-tab-header').on('click', function () {
-        let $transfersTabContent = $('#transfers-tab-content');
+        let $transfersWrapper = $('#transfers-wrapper');
 
-        if ($transfersTabContent.is(':empty')) {
+        if ($transfersWrapper.is(':empty')) {
             $.post({
-                url: '/transfer/get-tab-content',
+                url: '/transfer/get-user-transfers',
                 success: function (html) {
-                    $transfersTabContent.append(html);
+                    $transfersWrapper.append(html);
                 }
             });
         }
@@ -51,9 +64,9 @@ $(function () {
                     $('#entity-actions-modal').modal('hide');
                     resetForm(form.attr('id'));
                     alert('Balance was replenished successfully');
-                    let entityGridId = `#${entityName}-list-grid-view`;
-                    $.pjax.reload({container: entityGridId});
-                    $(entityGridId).on('click', '.btn-icon', handlerGridViewClick);
+                    let pjaxId = `#${entityName}-pjax-grid-view`;
+                    $.pjax.reload({container: pjaxId});
+                    $(pjaxId).on('click', '.btn-icon', handlerGridViewClick);
                     return false;
                 }
                 alert('Something went wrong. Please try again later.');

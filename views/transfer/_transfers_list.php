@@ -1,51 +1,39 @@
 <?php
 
-use app\models\search\TransferSearch;
-use yii\grid\ActionColumn;
-use yii\grid\SerialColumn;
 use app\models\Transfer;
 use app\models\TransferStatus;
-use app\models\User;
-use yii\bootstrap\Html;
 use yii\data\ActiveDataProvider;
-use yii\db\ActiveQuery;
+use yii\grid\ActionColumn;
 use yii\grid\GridView;
+use yii\grid\SerialColumn;
+use yii\helpers\Html;
 use yii\widgets\Pjax;
 
-/* @var User $user */
-/* @var Transfer $model */
-/* @var ActiveQuery $transfers */
-
-echo $this->render('/transfer/_create_form', [
-    'model' => $model,
-    'user' => $user
-]);
+/* @var ActiveDataProvider $dataProvider */
 
 Pjax::begin([
-    'id' => 'transfer-list-grid-view'
+    'id' => 'transfer-pjax-grid-view'
 ]);
 
 echo GridView::widget([
-    'dataProvider' => new ActiveDataProvider([
-        'query' => $transfers,
-    ]),
+    'dataProvider' => $dataProvider,
     'emptyText' => 'You haven\'t any transfers',
     'columns' => [
         ['class' => SerialColumn::class],
         'id',
         [
             'attribute' => 'id_sender_wallet',
-            'value' => fn(Transfer $data) => $data->getDisplayWalletDataForOwner('sender'),
+            'value' => fn(Transfer $transfer) => $transfer->getDisplayWalletDataForOwner('sender'),
         ],
         [
             'attribute' => 'id_recipient_wallet',
-            'value' => fn(Transfer $data) => $data->getDisplayWalletDataForOwner('recipient'),
+            'value' => fn(Transfer $transfer) => $transfer->getDisplayWalletDataForOwner('recipient'),
         ],
         'amount',
         'exec_time',
         [
             'attribute' => 'status',
-            'value' => fn(Transfer $data) => $data->status->title,
+            'value' => fn(Transfer $transfer) => $transfer->status->title,
         ],
         'created_at',
         'updated_at',
@@ -54,23 +42,23 @@ echo GridView::widget([
             'header' => 'Actions',
             'template' => '{retry}{cancel}',
             'buttons' => [
-                'cancel' => function ($url, Transfer $dataProvider): string {
-                    if ($dataProvider->status->title === TransferStatus::IN_PROGRESS) {
+                'cancel' => function ($url, Transfer $transfer): string {
+                    if ($transfer->status->title === TransferStatus::IN_PROGRESS) {
                         return Html::tag('span', '', [
                             'class' => 'glyphicon glyphicon-remove-circle btn-icon cancel-btn text-danger',
                             'title' => 'Cancel the transfer',
-                            'data-id' => $dataProvider['id'],
+                            'data-id' => $transfer->id,
                             'data-entity-name' => 'transfer'
                         ]);
                     }
                     return '';
                 },
-                'retry' => function ($url, Transfer $dataProvider): string {
-                    if ($dataProvider->status->title === TransferStatus::ERROR) {
+                'retry' => function ($url, Transfer $transfer): string {
+                    if ($transfer->status->title === TransferStatus::ERROR) {
                         return Html::tag('span', '', [
                             'class' => 'glyphicon glyphicon-repeat btn-icon retry-btn',
                             'title' => 'Retry to make the transfer',
-                            'data-id' => $dataProvider['id'],
+                            'data-id' => $transfer->id,
                         ]);
                     }
                     return '';
@@ -79,7 +67,10 @@ echo GridView::widget([
         ],
     ],
     'options' => [
+        'data-pagination-link-last' => $dataProvider->pagination->links['last'] ?? '',
+        'data-page-count' => $dataProvider->pagination->pageCount,
         'class' => 'mt-2 entity-grid-view',
+        'id' => 'transfer-grid-view'
     ]
 ]);
 Pjax::end();

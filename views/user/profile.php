@@ -1,18 +1,20 @@
 <?php
 
-use yii\web\JqueryAsset;
-
-/* @var $this yii\web\View */
-
-/* @var app\models\User $model */
-/* @var ArrayDataProvider $dataProvider */
-/* @var Wallet $wallet */
-
+use app\models\Transfer;
 use app\models\Wallet;
 use yii\bootstrap\Modal;
 use yii\bootstrap\Tabs;
 use yii\data\ArrayDataProvider;
-use yii\helpers\Html;
+use app\models\User;
+use yii\web\JqueryAsset;
+use yii\web\View;
+
+/* @var $this View */
+
+/* @var User $model */
+/* @var ArrayDataProvider $dataProvider */
+/* @var Wallet $wallet */
+/* @var Transfer $transfer */
 
 $this->title = 'Profile';
 $this->registerJsFile('/js/profile.js', ['depends' => JqueryAsset::class]);
@@ -29,7 +31,7 @@ $this->registerJsFile('/js/profile.js', ['depends' => JqueryAsset::class]);
                     'label' => 'Wallets',
                     'content' => $this->render('/wallet/_wallets', [
                         'wallet' => $wallet,
-                        'userWallets' => $model->getWallets(),
+                        'dataProvider' => $dataProvider,
                     ]),
                     'active' => true,
                     'options' => [
@@ -38,7 +40,11 @@ $this->registerJsFile('/js/profile.js', ['depends' => JqueryAsset::class]);
                 ],
                 [
                     'label' => 'Transfers',
-                     'headerOptions' => [
+                    'content' => $this->render('/transfer/_transfers', [
+                        'model' => $transfer,
+                        'user' => $model,
+                    ]),
+                    'headerOptions' => [
                         'id' => 'transfers-tab-header',
                     ],
                     'options' => [

@@ -8,19 +8,17 @@ use yii\grid\GridView;
 use yii\helpers\Html;
 use yii\widgets\Pjax;
 
-/* @var ActiveDataProvider $userWallets */
+/* @var ActiveDataProvider $dataProvider */
 /* @var Wallet $wallet */
 
 echo $this->render('/wallet/_create_form', ['model' => $wallet]);
 
 Pjax::begin([
-    'id' => 'wallet-list-grid-view',
+    'id' => 'wallet-pjax-grid-view',
 ]);
 
 echo GridView::widget([
-    'dataProvider' => new ActiveDataProvider([
-        'query' => $userWallets
-    ]),
+    'dataProvider' => $dataProvider,
     'emptyText' => 'You haven\'t any wallets',
     'columns' => [
         ['class' => SerialColumn::class],
@@ -45,7 +43,11 @@ echo GridView::widget([
         ],
     ],
     'options' => [
+        'data-pagination-link-last' => $dataProvider->pagination->links['last'] ?? '',
+        'data-page-count' => $dataProvider->pagination->pageCount,
         'class' => 'mt-2 entity-grid-view',
+        'id' => 'wallet-grid-view'
     ]
 ]);
 Pjax::end();
+
