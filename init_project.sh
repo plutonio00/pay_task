@@ -11,6 +11,5 @@ docker exec pay_task_php php yii migrate --migrationPath=@yii/rbac/migrations/ -
 docker exec pay_task_php php yii rbac/init-roles
 docker exec pay_task_php php yii fixture/load "*" --interactive=0
 docker exec pay_task_php php yii rbac/assign-roles-for-fixture-users
-docker exec pay_task_php php yii rbac/assign-roles-for-fixture-users
 docker exec pay_task_php chgrp -R www-data .
 docker exec pay_task_php chmod 777 -R runtime
