@@ -12,4 +12,6 @@ RUN docker-php-ext-install pdo_mysql && docker-php-ext-enable pdo_mysql
 RUN curl -sS https://getcomposer.org/installer | php
 RUN mv composer.phar /usr/bin/composer
 
+RUN echo "0 * * * * cd /var/www/pay_test_task && php yii exec-transfer" >> /var/spool/cron/crontabs/root
+
 WORKDIR /var/www/pay_test_task

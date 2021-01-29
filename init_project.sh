@@ -5,21 +5,12 @@ cd docker
 cp .env.example .env
 docker-compose up -d
 
-docker exec -ti pay_task_php bash
-composer install
-php yii migrate --interactive=0
-php yii migrate --migrationPath=@yii/rbac/migrations/ --interactive=0
-php yii rbac/init-roles
-php yii fixture/load "*" --interactive=0
-php yii rbac/assign-roles-for-fixture-users
-
-crontab -l > mycron
-echo "0 * * * * php yii exec-transfer" >> mycron
-crontab mycron
-rm mycron
-
-exit
-
-cd ..
-sudo chgrp -R www-data .
-sudo chmod 777 -R runtime
+docker exec pay_task_php composer install
+docker exec pay_task_php php yii migrate --interactive=0
+docker exec pay_task_php php yii migrate --migrationPath=@yii/rbac/migrations/ --interactive=0
+docker exec pay_task_php php yii rbac/init-roles
+docker exec pay_task_php php yii fixture/load "*" --interactive=0
+docker exec pay_task_php php yii rbac/assign-roles-for-fixture-users
+docker exec pay_task_php php yii rbac/assign-roles-for-fixture-users
+docker exec pay_task_php chgrp -R www-data .
+docker exec pay_task_php chmod 777 -R runtime
