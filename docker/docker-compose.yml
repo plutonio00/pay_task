@@ -9,6 +9,7 @@ services:
     volumes:
       - ../:/var/www/pay_test_task
     tty: true
+    entrypoint: sh -c "wait-for mysql:3306 -t 30 -- echo mysql is ready; php-fpm"
 
   nginx:
     image: nginx:1.19.3
