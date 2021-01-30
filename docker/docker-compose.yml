@@ -1,4 +1,4 @@
-version: '3'
+version: '2.4'
 
 services:
 
@@ -9,7 +9,9 @@ services:
     volumes:
       - ../:/var/www/pay_test_task
     tty: true
-    entrypoint: sh -c "wait-for mysql:3306 -t 30 -- echo mysql is ready; php-fpm"
+    depends_on:
+      mysql:
+        condition: service_healthy
 
   nginx:
     image: nginx:1.19.3

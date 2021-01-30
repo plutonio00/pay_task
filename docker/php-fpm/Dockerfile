@@ -14,7 +14,4 @@ RUN mv composer.phar /usr/bin/composer
 
 RUN echo "0 * * * * cd /var/www/pay_test_task && php yii exec-transfer" >> /var/spool/cron/crontabs/root
 
-COPY ./wait-for.sh /usr/bin/wait-for
-RUN chmod +x /usr/bin/wait-for
-
 WORKDIR /var/www/pay_test_task
