@@ -12,7 +12,6 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
-
   nginx:
     image: nginx:1.19.3
     container_name: pay_task_nginx
