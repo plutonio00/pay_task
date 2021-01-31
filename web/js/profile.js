@@ -11,20 +11,11 @@ $(function () {
             success: function (answer) {
                 if (answer.success) {
                     resetForm(form.attr('id'));
-                    let pjaxId = `#${entityName}-pjax-grid-view`;
                     let $gridView = $(`#${entityName}-grid-view`);
-                    let pageCount = $gridView.data('pageCount');
 
                     alert(`${entityName} was added successfully`);
 
-                    if (pageCount === 1) {
-                        $.pjax.reload({container: pjaxId, replace: false});
-                    }
-                    else {
-                        let paginationLinkLast = $gridView.data('paginationLinkLast');
-                        $.pjax.reload({container: pjaxId, url: paginationLinkLast, replace: false});
-                    }
-
+                    reloadPjaxOfGridView(entityName);
                     $($gridView).on('click', '.btn-icon', handlerGridViewClick);
                     return false;
                 }
@@ -63,7 +54,8 @@ $(function () {
                     resetForm(form.attr('id'));
                     alert('Balance was replenished successfully');
                     let pjaxId = `#${entityName}-pjax-grid-view`;
-                    $.pjax.reload({container: pjaxId, replace: false});
+
+                    reloadPjaxOfGridView(entityName, 'current');
                     $(pjaxId).on('click', '.btn-icon', handlerGridViewClick);
                     return false;
                 }
@@ -76,6 +68,28 @@ $(function () {
 
 });
 
+function reloadPjaxOfGridView(entityName, pageType = 'last') {
+    let pjaxId = `#${entityName}-pjax-grid-view`;
+    let $gridView = $(`#${entityName}-grid-view`);
+    let pageCount = $gridView.data('pageCount');
+
+    if (pageType === 'last') {
+        if (pageCount === 1) {
+            $.pjax.reload({container: pjaxId, replace: false});
+        }
+        else {
+            let paginationUrl = $gridView.data('paginationUrl');
+            let paginationLinkLast = `${paginationUrl}?page=${pageCount}`;
+            $.pjax.reload({container: pjaxId, url: paginationLinkLast, replace: false});
+        }
+    }
+    else {
+        let currentPage = $gridView.data('currentPage') + 1;
+        let paginationUrl = $gridView.data('paginationUrl');
+        let paginationLinkCurrent = `${paginationUrl}?page=${currentPage}`;
+        $.pjax.reload({container: pjaxId, url: paginationLinkCurrent, replace: false});
+    }
+}
 
 function resetForm(id) {
     $(`#${id}`).each(function () {
@@ -128,8 +142,8 @@ function handlerGridViewClick() {
                     if (result.success) {
                         message = data.changeType === 'cancel' ?
                             'Transfer canceled successfully.' : 'Translation will be done at the end of this hour.';
-                        let pjaxId = `#${entityName}-pjax-grid-view`;
-                        $.pjax.reload({container: pjaxId, replace: false});
+
+                        reloadPjaxOfGridView(entityName, 'current');
                     } else {
                         message = 'Something went wrong. Please try again later.';
                     }

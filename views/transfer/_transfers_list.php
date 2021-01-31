@@ -68,8 +68,9 @@ echo GridView::widget([
         ],
     ],
     'options' => [
-        'data-pagination-link-last' => $dataProvider->pagination->links['last'] ?? '',
+        'data-pagination-url' => '/transfer/get-user-transfers',
         'data-page-count' => $dataProvider->pagination->pageCount,
+        'data-current-page' => $dataProvider->pagination->page,
         'class' => 'mt-2 entity-grid-view',
         'id' => 'transfer-grid-view'
     ]

@@ -32,6 +32,7 @@ $this->registerJsFile('/js/profile.js', ['depends' => JqueryAsset::class]);
                     'content' => $this->render('/wallet/_wallets', [
                         'wallet' => $wallet,
                         'dataProvider' => $dataProvider,
+                        'user' => $model,
                     ]),
                     'active' => true,
                     'options' => [

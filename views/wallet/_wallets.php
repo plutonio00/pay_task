@@ -1,5 +1,6 @@
 <?php
 
+use app\models\User;
 use yii\grid\ActionColumn;
 use yii\grid\SerialColumn;
 use app\models\Wallet;
@@ -10,6 +11,7 @@ use yii\widgets\Pjax;
 
 /* @var ActiveDataProvider $dataProvider */
 /* @var Wallet $wallet */
+/* @var User $user */
 
 echo $this->render('/wallet/_create_form', ['model' => $wallet]);
 
@@ -44,11 +46,11 @@ echo GridView::widget([
         ],
     ],
     'options' => [
-        'data-pagination-link-last' => $dataProvider->pagination->links['last'] ?? '',
+        'data-pagination-url' => '/user/' . $user->login,
         'data-page-count' => $dataProvider->pagination->pageCount,
+        'data-current-page' => $dataProvider->pagination->page,
         'class' => 'mt-2 entity-grid-view',
         'id' => 'wallet-grid-view'
     ]
 ]);
 Pjax::end();
-
