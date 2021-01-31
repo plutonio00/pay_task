@@ -6,7 +6,8 @@ use app\models\Transfer;
 use app\models\Wallet;
 use Yii;
 use app\models\User;
-use yii\data\ActiveDataProvider;
+use yii\data\ArrayDataProvider;
+use yii\data\Sort;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -82,8 +83,20 @@ class UserController extends Controller
             ]);
         }
 
-        $dataProvider = new ActiveDataProvider([
-            'query' => $model->getWallets(),
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => $model->wallets,
+            'sort' => new Sort([
+                'attributes' => [
+                    'id',
+                    'title',
+                    'amount',
+                    'created_at',
+                    'updated_at',
+                ]
+            ]),
+            'pagination' => [
+                'pageSize' => 20,
+            ],
         ]);
 
         $dataProvider->prepare();
