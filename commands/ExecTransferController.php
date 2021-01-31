@@ -40,11 +40,13 @@ class ExecTransferController extends Controller
 
     private function makeTransfers(): void
     {
+        Yii::info('Execution of transfers was started', 'transfers');
         $transfers = Transfer::getTransfersForExecute();
 
         foreach ($transfers as $transfer) {
             $this->makeOneTransfer($transfer);
         }
+        Yii::info('Execution of transfers was ended', 'transfers');
     }
 
     private function makeOneTransfer(Transfer $transfer): void
@@ -67,10 +69,6 @@ class ExecTransferController extends Controller
 
             $transfer->id_status = $this->idStatusDone;
 
-            /**
-             * I disabled validation when saving a translation,
-             * because all of its fields must have been validated earlier
-            */
             if (!$senderWallet->save() || !$recipientWallet->save() || !$transfer->save()) {
                 Yii::error(
                     sprintf(
